@@ -3,12 +3,12 @@ from pathlib import Path
 from pydantic_settings import BaseSettings
 
 
-class Settings(BaseSettings):
-    db_user: str
-    db_password: str
-    db_name: str
-    db_host: str = "localhost"
-    db_port: int = 5432
+class Postgres(BaseSettings):
+    user: str
+    password: str
+    name: str
+    host: str = "localhost"
+    port: int = 5432
 
     @property
     def database_url(self) -> str:
@@ -18,7 +18,8 @@ class Settings(BaseSettings):
         "env_file": Path(__file__).resolve().parent.parent / ".env",
         "env_file_encoding": "utf-8",
         "extra": "ignore",
+        "prefix": "db_"
     }
 
 
-settings = Settings()
+settings = Postgres()

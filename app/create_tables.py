@@ -11,12 +11,12 @@ from app.database import engine
 from app.models import Base
 
 async def main():
-    print("🛠️  Создаем таблицы в базе данных...")
+    print("Создаем таблицы в базе данных...")
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    print("✅ Таблица 'spimex_trading_results' успешно создана!")
+    print("Таблица 'spimex_trading_results' успешно создана!")
     await engine.dispose()
 
 if __name__ == "__main__":
