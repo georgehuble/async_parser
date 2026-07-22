@@ -1,0 +1,97 @@
+<mxfile host="65bd71144e">
+    <diagram id="PuhEy_0UwTH3k7zwxEep" name="Страница — 1">
+        <mxGraphModel dx="641" dy="279" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#0066CC" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Схема проекта async_parser" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontSize=21;" vertex="1" parent="1">
+                    <mxGeometry x="199" y="10" width="430" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="1. Скачивание файлов" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="59" y="95" width="179" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="2. Недопустить повторного скачивания файлов, при условии, что они уже имеются" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="59" y="135" width="570" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="29" y="100" width="20" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="29" y="140" width="20" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="3. Извлечение содержимого файлов:&lt;br&gt;&amp;nbsp;- xsl формат&lt;br&gt;&amp;nbsp;- pdf формат" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="59" y="180" width="570" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="29" y="180" width="20" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="49" y="205" width="11" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="49" y="230" width="11" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="5. Создание базы данных" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="19.25" y="320" width="258.5" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="28.25" y="325" width="20" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="6. Добавление извлеченных данных в БД" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="49" y="360" width="258.5" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="28.25" y="360" width="20" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="database" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="590" y="460" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="parser" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="28.25" y="420" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="extractor" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="307.5" y="440" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="22" target="33">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="351" y="530" as="sourcePoint"/>
+                        <mxPoint x="230" y="490" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="27" value="converter" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="450" y="450" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="23" target="27">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="373" y="660" as="sourcePoint"/>
+                        <mxPoint x="490" y="480" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="29" value="" style="endArrow=classic;html=1;entryX=0.006;entryY=0.411;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryPerimeter=0;" edge="1" parent="1" source="27" target="20">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="613" y="459.70000000000005" as="sourcePoint"/>
+                        <mxPoint x="653" y="459.70000000000005" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="30" value="4. Конвертирование данных в json&lt;div&gt;&lt;font style=&quot;color: rgb(255, 255, 255);&quot;&gt;&amp;nbsp; &amp;nbsp; - проверка дублей, проверка уже имеющихся данных,&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; чтобы повторно не извлекать&lt;/font&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="50.5" y="250" width="449.5" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="28.25" y="255" width="20" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="50.5" y="280" width="11" height="10" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" value="downloader" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="170" y="430" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="34" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=-0.009;entryY=0.443;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="33" target="23">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="190" y="480" as="sourcePoint"/>
+                        <mxPoint x="225" y="490" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

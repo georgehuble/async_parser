@@ -24,6 +24,18 @@ update:
 run:
 	poetry run python main.py
 
+# Отдельный запуск парсера
+parser:
+	poetry run python src/parser/spimex.py
+
+# Инициализация базы данных
+database:
+	poetry run python -m src.database.main
+
+# Инициализация базы данных
+upload:
+	cd src && poetry run python -m parser.upload
+
 # Зайти в shell окружения poetry
 shell:
 	poetry shell
@@ -56,3 +68,15 @@ clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
 	rm -rf .pytest_cache .mypy_cache .ruff_cache htmlcov .coverage
+
+# Запуск контейнеров
+docker:
+	docker compose up -d
+
+# Создать новую миграцию (использование: make migrate m="описание")
+migrate:
+	poetry run alembic revision --autogenerate -m "$(m)"
+
+# Применить миграции
+upgrade:
+	poetry run alembic upgrade head
