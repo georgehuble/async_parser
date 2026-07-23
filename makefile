@@ -22,19 +22,20 @@ update:
 
 # Запустить приложение
 run:
-	poetry run python main.py
+	poetry run python -m src.main
 
-# Отдельный запуск парсера
-parser:
-	poetry run python src/parser/spimex.py
 
 # Инициализация базы данных
 database:
 	poetry run python -m src.database.main
 
-# Инициализация базы данных
-upload:
-	cd src && poetry run python -m parser.upload
+# Парсинг данных и выгрузка в БД
+parser:
+	poetry run python -m src.parser.upload
+
+# Скачивание файлов из базы данных
+download:
+	poetry run python -m src.downloader.spimex_downloader
 
 # Зайти в shell окружения poetry
 shell:

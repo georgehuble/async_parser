@@ -3,8 +3,8 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-from database.config import settings
-from database.models import Base
+from src.database.config import settings
+from src.database.models import Base
 
 config = context.config
 target_metadata = Base.metadata

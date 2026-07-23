@@ -42,4 +42,7 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
-ignore = [] 
+ignore = []
+
+[tool.mypy]
+explicit_package_bases = true

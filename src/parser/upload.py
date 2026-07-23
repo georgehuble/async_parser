@@ -1,62 +1,92 @@
-import asyncio
 import logging
+import re
+from datetime import date
 
-from sqlalchemy.exc import IntegrityError
+from src.core.interfaces import Parser
+from src.domain.protocols import UploadRepositoryProtocol
 
-from database import Spimex, get_session
-from parser.spimex import main as run_spimex_parser
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
-async def save_urls(urls: list[str]):
+def extract_date_from_url(url: str) -> date | None:
     """
-    Последовательно в обратном порядке сохраняет URL в БД.
-    Каждая запись коммитится отдельно, чтобы корректно обрабатывать дубликаты.
+    Извлекает дату из URL вида:
+      .../oil_20241217162000.pdf  или  .../oil_xls_20241217162000.xls
+    Возвращает объект date (2024-12-17) или None, если дату не удалось распарсить.
     """
-    logger.info(f"Начало сохранения {len(urls)} ссылок в БД...")
-    saved_count = 0
-    skipped_count = 0
-
-    for url in reversed(urls):
-        # Для каждой записи — своя сессия, чтобы commit/rollback
-        # работали независимо и не ломали весь цикл
-        async with get_session() as session:
-            try:
-                new_record = Spimex(url=url)
-                session.add(new_record)
-                await session.commit()  # Коммитим каждую запись отдельно
-                saved_count += 1
-                logger.info(f"[{saved_count}] Сохранено: {url}")
-            except IntegrityError:
-                await session.rollback()
-                skipped_count += 1
-                logger.warning(f"Пропущен дубликат: {url}")
-            except Exception as e:
-                await session.rollback()
-                logger.error(f"Ошибка при сохранении {url}: {e}")
-
-    logger.info(
-        f"Готово. Сохранено: {saved_count}, пропущено: {skipped_count}"
-    )
+    match = re.search(r"(\d{4})(\d{2})(\d{2})\d{6}", url)
+    if not match:
+        logger.warning("Не удалось извлечь дату из URL: %s", url)
+        return None
+    year, month, day = int(match.group(1)), int(match.group(2)), int(match.group(3))
+    return date(year, month, day)
 
 
-async def main():
-    try:
-        logger.info("Запуск парсера Spimex...")
-        scraped_urls = await run_spimex_parser()
+class UploadService:
+    """Сервис для парсинга ссылок и сохранения их в БД.
+
+    Принимает абстрактные Parser и UploadRepositoryProtocol — не зависит
+    от конкретных реализаций.
+    """
+
+    def __init__(self, parser: Parser, repository: UploadRepositoryProtocol) -> None:
+        """Инициализирует сервис.
+
+        Args:
+            parser: Абстрактный парсер для получения ссылок.
+            repository: Репозиторий для сохранения ссылок в БД.
+        """
+        self._parser = parser
+        self._repository = repository
+
+    async def run(self, max_date: date | None = None) -> list[str]:
+        """Запускает парсинг и сохраняет ссылки в БД.
+
+        Args:
+            max_date: Максимальная дата для парсинга.
+                     Если None — парсинг всех доступных страниц.
+
+        Returns:
+            Список сохранённых ссылок.
+        """
+        logger.info("Запуск парсера...")
+        if max_date:
+            logger.info("Парсер остановится <= %s", max_date)
+        else:
+            logger.info("Парсинг всех доступных страниц")
+
+        # Устанавливаем max_date в парсер, если поддерживается
+        if hasattr(self._parser, "max_date"):
+            self._parser.max_date = max_date  # type: ignore[union-attr]
+
+        scraped_urls = await self._parser.parse()
 
         if not scraped_urls:
-            logger.info("Ссылки не найдены. Завершение работы.")
-            return
+            logger.info("Ссылки не найдены.")
+            return []
 
-        logger.info(f"Парсер нашел {len(scraped_urls)} уникальных ссылок.")
-        await save_urls(scraped_urls)
+        logger.info("Парсер нашёл %d уникальных ссылок.", len(scraped_urls))
+        await self._save_urls(scraped_urls)
+        return scraped_urls
 
-    except Exception as e:
-        logger.critical(f"Критическая ошибка: {e}", exc_info=True)
+    async def _save_urls(self, urls: list[str]) -> None:
+        """Сохраняет ссылки в БД через репозиторий."""
+        saved_count = 0
+        skipped_count = 0
 
+        for url in reversed(urls):
+            try:
+                url_date = extract_date_from_url(url)
 
-if __name__ == "__main__":
-    asyncio.run(main())
+                if url_date is not None and await self._repository.url_exists_by_date(url_date):
+                    skipped_count += 1
+                    logger.warning("Пропущен дубликат по дате %s: %s", url_date, url)
+                    continue
+
+                await self._repository.add_url(url, date=url_date)
+                saved_count += 1
+                logger.info("[%d] Сохранено: %s (дата: %s)", saved_count, url, url_date)
+            except Exception as e:
+                logger.error("Ошибка при сохранении %s: %s", url, e)
+
+        logger.info("Готово. Сохранено: %d, пропущено: %d", saved_count, skipped_count)

@@ -12,7 +12,7 @@ class Base(DeclarativeBase):
 class Spimex(Base):
     __tablename__ = "results"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    url: Mapped[str] = mapped_column(String(500), unique=True, nullable=False, index=True)
+    url: Mapped[str] = mapped_column(String(500), nullable=False, index=True)
 
     file_path: Mapped[str] = mapped_column(String(500), nullable=True)
 
@@ -28,7 +28,7 @@ class Spimex(Base):
     total: Mapped[float] = mapped_column(Float, nullable=True)
     count: Mapped[int] = mapped_column(Integer, nullable=True)
 
-    date: Mapped[datetime] = mapped_column(Date, nullable=True, index=True)
+    date: Mapped[datetime] = mapped_column(Date, unique=True, nullable=True, index=True)
 
     created_on: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=True)
 

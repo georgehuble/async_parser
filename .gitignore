@@ -5,3 +5,5 @@ __pycache__/
 venv/
 .vscode/
 .ruff_chache/
+src/downloader/files/xls
+src/downloader/files/pdf

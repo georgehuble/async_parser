@@ -1,7 +1,7 @@
 """add file_path to parsered
 
 Revision ID: 6246f2c10e17
-Revises: 
+Revises:
 Create Date: 2026-07-21 19:05:40.470105
 
 """

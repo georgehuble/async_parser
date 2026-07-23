@@ -16,3 +16,4 @@
 - Run all commands from the project root (where pyproject.toml is located).
 - If a check fails, investigate and fix the issue before considering the task complete — do not ignore failures.
 - Only run `mypy` / `pytest` steps if these tools are configured in the project (check pyproject.toml).
+- **Separate imports within functions and classes are not allowed.**
