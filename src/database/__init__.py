@@ -1,6 +1,6 @@
 from .database import async_session_factory, create_tables, engine, get_session
 from .models import Base
-from .repository import DownloadRepository, SpimexRepository, UploadRepository
+from .repository import SpimexDownloadRepository, SpimexUploadRepository
 
 __all__ = [
     "engine",
@@ -8,7 +8,6 @@ __all__ = [
     "get_session",
     "create_tables",
     "Base",
-    "UploadRepository",
-    "DownloadRepository",
-    "SpimexRepository",
+    "SpimexUploadRepository",
+    "SpimexDownloadRepository",
 ]

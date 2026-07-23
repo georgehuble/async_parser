@@ -1,25 +1,11 @@
 import logging
-import re
 from datetime import date
 
 from src.core.interfaces import Parser
 from src.domain.protocols import UploadRepositoryProtocol
+from src.domain.utils import save_urls
 
 logger = logging.getLogger(__name__)
-
-
-def extract_date_from_url(url: str) -> date | None:
-    """
-    Извлекает дату из URL вида:
-      .../oil_20241217162000.pdf  или  .../oil_xls_20241217162000.xls
-    Возвращает объект date (2024-12-17) или None, если дату не удалось распарсить.
-    """
-    match = re.search(r"(\d{4})(\d{2})(\d{2})\d{6}", url)
-    if not match:
-        logger.warning("Не удалось извлечь дату из URL: %s", url)
-        return None
-    year, month, day = int(match.group(1)), int(match.group(2)), int(match.group(3))
-    return date(year, month, day)
 
 
 class UploadService:
@@ -49,6 +35,14 @@ class UploadService:
         Returns:
             Список сохранённых ссылок.
         """
+        # Если в БД уже есть запись с max_date — данные актуальны, парсинг не нужен
+        if max_date is not None and await self._repository.url_exists_by_date(max_date):
+            logger.info(
+                "В БД уже есть данные за %s. Парсинг не требуется.",
+                max_date,
+            )
+            return []
+
         logger.info("Запуск парсера...")
         if max_date:
             logger.info("Парсер остановится <= %s", max_date)
@@ -71,22 +65,9 @@ class UploadService:
 
     async def _save_urls(self, urls: list[str]) -> None:
         """Сохраняет ссылки в БД через репозиторий."""
-        saved_count = 0
-        skipped_count = 0
-
-        for url in reversed(urls):
-            try:
-                url_date = extract_date_from_url(url)
-
-                if url_date is not None and await self._repository.url_exists_by_date(url_date):
-                    skipped_count += 1
-                    logger.warning("Пропущен дубликат по дате %s: %s", url_date, url)
-                    continue
-
-                await self._repository.add_url(url, date=url_date)
-                saved_count += 1
-                logger.info("[%d] Сохранено: %s (дата: %s)", saved_count, url, url_date)
-            except Exception as e:
-                logger.error("Ошибка при сохранении %s: %s", url, e)
-
-        logger.info("Готово. Сохранено: %d, пропущено: %d", saved_count, skipped_count)
+        await save_urls(
+            url_exists_by_date=self._repository.url_exists_by_date,
+            add_url=self._repository.add_url,
+            urls=urls,
+            extract_date=self._parser.extract_date,
+        )

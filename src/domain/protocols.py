@@ -7,8 +7,6 @@ from src.domain.entities import ExchangeRecord
 class UploadRepositoryProtocol(Protocol):
     """Протокол репозитория для загрузки (записи) ссылок в БД."""
 
-    async def get_max_date(self) -> date | None: ...
-
     async def url_exists_by_date(self, date: date) -> bool: ...
 
     async def add_url(self, url: str, date: date | None = None) -> ExchangeRecord: ...
@@ -16,6 +14,8 @@ class UploadRepositoryProtocol(Protocol):
 
 class DownloadRepositoryProtocol(Protocol):
     """Протокол репозитория для скачивания (чтения/обновления) файлов."""
+
+    async def get_max_date(self) -> date | None: ...
 
     async def get_links(self) -> list[tuple[date, str]]: ...
 

@@ -1,5 +1,4 @@
 import logging
-from abc import ABC, abstractmethod
 from datetime import date
 
 from sqlalchemy import func, select, update
@@ -12,40 +11,37 @@ from .models import Spimex
 logger = logging.getLogger(__name__)
 
 
-class UploadRepository(ABC):
-    """Абстрактный базовый класс репозитория для загрузки (записи) ссылок в БД."""
+class SpimexUploadRepository:
+    """Репозиторий для загрузки (записи) ссылок в БД."""
 
     def __init__(self, db_session: AsyncSession) -> None:
         self._db_session = db_session
 
-    @abstractmethod
-    async def get_max_date(self) -> date | None: ...
+    async def url_exists_by_date(self, date: date) -> bool:
+        """Проверяет, существует ли запись с указанной датой."""
+        query = select(Spimex.id).where(Spimex.date == date).limit(1)
+        result = await self._db_session.execute(query)
+        return result.scalar_one_or_none() is not None
 
-    @abstractmethod
-    async def url_exists_by_date(self, date: date) -> bool: ...
+    async def add_url(self, url: str, date: date | None = None) -> ExchangeRecord:
+        record = Spimex(url=url, date=date)
+        self._db_session.add(record)
+        await self._db_session.flush()
+        return ExchangeRecord(id=record.id, url=record.url)
 
-    @abstractmethod
-    async def add_url(self, url: str, date: date | None = None) -> ExchangeRecord: ...
 
-
-class DownloadRepository(ABC):
-    """Абстрактный базовый класс репозитория для скачивания (чтения/обновления) файлов."""
+class SpimexDownloadRepository:
+    """Репозиторий для скачивания (чтения/обновления) файлов."""
 
     def __init__(self, db_session: AsyncSession) -> None:
         self._db_session = db_session
 
-    @abstractmethod
-    async def get_links(self) -> list[tuple[date, str]]: ...
-
-    @abstractmethod
-    async def update_file_path_by_date(self, dt: date, file_path: str) -> None: ...
-
-    async def commit(self) -> None:
-        await self._db_session.commit()
-
-
-class SpimexRepository(UploadRepository, DownloadRepository):
-    """Реализация репозитория для работы с записями Spimex."""
+    async def get_max_date(self) -> date | None:
+        """Возвращает максимальную дату из таблицы results."""
+        query = select(func.max(Spimex.date))
+        result = await self._db_session.execute(query)
+        max_date = result.scalar_one_or_none()
+        return max_date
 
     async def get_links(self) -> list[tuple[date, str]]:
         query = select(Spimex.date, Spimex.url).where(Spimex.date.isnot(None))
@@ -62,21 +58,5 @@ class SpimexRepository(UploadRepository, DownloadRepository):
         stmt = update(Spimex).where(Spimex.date == dt).values(file_path=file_path)
         await self._db_session.execute(stmt)
 
-    async def url_exists_by_date(self, date: date) -> bool:
-        """Проверяет, существует ли запись с указанной датой."""
-        query = select(Spimex.id).where(Spimex.date == date).limit(1)
-        result = await self._db_session.execute(query)
-        return result.scalar_one_or_none() is not None
-
-    async def get_max_date(self) -> date | None:
-        """Возвращает максимальную дату из таблицы results."""
-        query = select(func.max(Spimex.date))
-        result = await self._db_session.execute(query)
-        max_date = result.scalar_one_or_none()
-        return max_date
-
-    async def add_url(self, url: str, date: date | None = None) -> ExchangeRecord:
-        record = Spimex(url=url, date=date)
-        self._db_session.add(record)
-        await self._db_session.flush()
-        return ExchangeRecord(id=record.id, url=record.url)
+    async def commit(self) -> None:
+        await self._db_session.commit()

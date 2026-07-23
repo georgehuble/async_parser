@@ -23,14 +23,14 @@
 
 Сделать систему расширяемой для новых источников данных без изменения существующего кода.
 
-- [ ] **2.1** Создать `src/core/interfaces.py` — определить абстрактные базовые классы:
+- [X] **2.1** Создать `src/core/interfaces.py` — определить абстрактные базовые классы:
   - `class Parser(ABC):` с методом `async def parse() -> list[str]`
   - `class Downloader(ABC):` с методом `async def download(links: list[tuple[int, str]]) -> None`
   - `class DataSource(ABC):` объединяющий парсер + загрузчик
-- [ ] **2.2** Переименовать `src/parser/spimex.py` → `src/parser/spimex_parser.py`, реализовать `SpimexParser(Parser)`
-- [ ] **2.3** Переименовать `src/downloader/spimex.py` → `src/downloader/spimex_downloader.py`, реализовать `SpimexDownloader(Downloader)`
-- [ ] **2.4** Создать `SpimexDataSource(DataSource)`, который собирает парсер + загрузчик
-- [ ] **2.5** Проверить: чтобы добавить MOEX, нужно только создать `MoexDataSource`, не трогая существующий код
+- [X] **2.2** Переименовать `src/parser/spimex.py` → `src/parser/spimex_parser.py`, реализовать `SpimexParser(Parser)`
+- [X] **2.3** Переименовать `src/downloader/spimex.py` → `src/downloader/spimex_downloader.py`, реализовать `SpimexDownloader(Downloader)`
+- [X] **2.4** Создать `SpimexDataSource(DataSource)`, который собирает парсер + загрузчик
+- [X] **2.5** Проверить: чтобы добавить MOEX, нужно только создать `MoexDataSource`, не трогая существующий код
 
 ---
 
@@ -50,9 +50,9 @@
 
 Проверить, что интерфейсы не содержат лишних методов.
 
-- [ ] **4.1** Пересмотреть `Parser` — только `parse()` и ничего лишнего
-- [ ] **4.2** Пересмотреть `Downloader` — только `download()`
-- [ ] **4.3** Если есть классы, которые используют только часть методов интерфейса — разбить интерфейс на более мелкие
+- [X] **4.1** Пересмотреть `Parser` — только `parse()` и ничего лишнего
+- [X] **4.2** Пересмотреть `Downloader` — только `download()`
+- [X] **4.3** Если есть классы, которые используют только часть методов интерфейса — разбить интерфейс на более мелкие
 
 ---
 
@@ -60,29 +60,29 @@
 
 Сделать так, чтобы высокоуровневые модули не зависели от низкоуровневых.
 
-- [ ] **5.1** Переписать `src/parser/upload.py`:
+- [X] **5.1** Переписать `src/parser/upload.py`:
   - Убрать `from parser.spimex import main`
   - Принимать `Parser` через конструктор/параметр
-- [ ] **5.2** Создать `src/orchestrator.py` — сервисный слой, который:
+- [X] **5.2** Создать `src/orchestrator.py` — сервисный слой, который:
   - Принимает `DataSource` (абстракция)
   - Вызывает последовательно: `parse()` → сохраняет → `download()`
-- [ ] **5.3** В `__main__` (точка входа) собирать зависимости вручную (DI):
+- [X] **5.3** В `__main__` (точка входа) собирать зависимости вручную (DI):
   - `parser = SpimexParser()`
   - `downloader = SpimexDownloader(repository)`
   - `source = SpimexDataSource(parser, downloader)`
   - `orchestrator = Orchestrator(source, repository)`
-- [ ] **5.4** Проверить: высокоуровневый код не импортирует низкоуровневые модули напрямую
+- [X] **5.4** Проверить: высокоуровневый код не импортирует низкоуровневые модули напрямую
 
 ---
 
 ### 6. Чистка кода
 
-- [ ] **6.1** Удалить дублирование `logging.basicConfig` — оставить один раз в `src/__init__.py`
+- [X] **6.1** Удалить дублирование `logging.basicConfig` — оставить один раз в `src/__init__.py`
 - [ ] **6.2** Реализовать или удалить пустые пакеты: `converter/`, `extractor/`
-- [ ] **6.3** Обновить `pyproject.toml` при необходимости
-- [ ] **6.4** Запустить `poetry run ruff check --fix .`
-- [ ] **6.5** Запустить `poetry run mypy .` (если настроен)
-- [ ] **6.6** Запустить `poetry run pytest`
+- [X] **6.3** Обновить `pyproject.toml` при необходимости
+- [X] **6.4** Запустить `poetry run ruff check --fix .`
+- [X] **6.5** Запустить `poetry run mypy .` (если настроен)
+- [X] **6.6** Запустить `poetry run pytest`
 
 ---
 

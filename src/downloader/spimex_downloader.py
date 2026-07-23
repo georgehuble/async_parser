@@ -204,10 +204,10 @@ async def main(max_concurrent: int = 8) -> None:
         max_concurrent: Максимальное количество одновременных загрузок.
     """
     from src.database import get_session
-    from src.database.repository import SpimexRepository
+    from src.database.repository import SpimexDownloadRepository
 
     async with get_session() as db_session:
-        repo: DownloadRepositoryProtocol = SpimexRepository(db_session)
+        repo: DownloadRepositoryProtocol = SpimexDownloadRepository(db_session)
         links = await repo.get_links()
 
     downloader = SpimexDownloader(repository=repo)

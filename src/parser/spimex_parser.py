@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import re
 from datetime import date, datetime
 from urllib.parse import urljoin
 
@@ -31,6 +32,17 @@ class SpimexParser(Parser):
     async def parse(self) -> list[str]:
         """Запускает парсинг и возвращает список ссылок."""
         return await self._main()
+
+    def extract_date(self, url: str) -> date | None:
+        """Извлекает дату из URL Spimex.
+
+        Формат URL:  .../oil_20241217162000.pdf  или  .../oil_xls_20241217162000.xls
+        """
+        match = re.search(r"(\d{4})(\d{2})(\d{2})\d{6}", url)
+        if not match:
+            return None
+        year, month, day = int(match.group(1)), int(match.group(2)), int(match.group(3))
+        return date(year, month, day)
 
     @staticmethod
     def _parse_date_from_span(span_text: str) -> date | None:

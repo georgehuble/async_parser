@@ -14,7 +14,7 @@ async def create_tables():
 
 
 engine = create_async_engine(
-    settings.database_url, echo=False, pool_pre_ping=True, pool_size=10, connect_args={"ssl": False}
+    settings.database_url, echo=True, pool_pre_ping=True, pool_size=10, connect_args={"ssl": False}
 )
 
 
