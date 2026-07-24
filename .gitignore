@@ -7,3 +7,4 @@ venv/
 .ruff_chache/
 src/downloader/files/xls
 src/downloader/files/pdf
+/test
