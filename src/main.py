@@ -2,48 +2,90 @@
 
 Здесь происходит сборка всех зависимостей вручную без использования DI-фреймворка.
 Это единственное место, где высокоуровневый код импортирует конкретные реализации.
+Также содержит оркестратор, координирующий парсинг и скачивание.
 """
 
 import asyncio
 import logging
 
 from src.database import get_session
-from src.database.repository import SpimexDownloadRepository, SpimexUploadRepository
+from src.database.repository import TradeRepository
 from src.datasource.spimex_datasource import SpimexDataSource
+from src.domain.interfaces import DataSource
+from src.domain.protocols import DownloadRepositoryProtocol
 from src.downloader.spimex_downloader import SpimexDownloader
-from src.orchestrator import Orchestrator
 from src.parser.spimex_parser import SpimexParser
 from src.parser.upload import UploadService
 
 logger = logging.getLogger(__name__)
 
 
+class Orchestrator:
+    """Оркестратор, управляющий полным циклом: парсинг → сохранение → скачивание."""
+
+    def __init__(
+        self,
+        source: DataSource,
+        upload_service: UploadService,
+        download_repository: DownloadRepositoryProtocol,
+    ) -> None:
+        """Инициализирует оркестратор.
+
+        Args:
+            source: Источник данных (для скачивания файлов).
+            upload_service: Сервис парсинга и сохранения ссылок в БД.
+            download_repository: Репозиторий для получения ссылок на скачивание.
+        """
+        self._source = source
+        self._upload_service = upload_service
+        self._download_repository = download_repository
+
+    async def run(self) -> None:
+        """Выполняет полный цикл: парсинг → сохранение → скачивание."""
+        # Получаем максимальную дату из БД для ранней остановки парсинга
+        max_date = await self._download_repository.get_max_date()
+
+        # Шаг 1–2: Парсинг + сохранение ссылок в БД
+        await self._upload_service.run(max_date=max_date)
+
+        # Шаг 3: Получение ссылок для скачивания
+        links = await self._download_repository.get_links()
+
+        if not links:
+            logger.info("Нет ссылок для скачивания.")
+            return
+
+        # Шаг 4: Скачивание
+        logger.info("Запуск скачивания %d файлов...", len(links))
+        await self._source.download(links)
+        logger.info("Цикл завершён.")
+
+
 async def main() -> None:
     """Собирает зависимости и запускает оркестратор."""
     logger.info("Сборка зависимостей...")
 
-    # Создаём сессию БД и репозитории
+    # Создаём сессию БД и общий репозиторий сделок
     async with get_session() as session:
-        upload_repository = SpimexUploadRepository(session)
-        download_repository = SpimexDownloadRepository(session)
+        trade_repository = TradeRepository(session)
 
         # Получаем максимальную дату из БД для ранней остановки парсинга
-        max_date = await download_repository.get_max_date()
+        max_date = await trade_repository.get_max_date()
         logger.info("Максимальная дата в БД: %s", max_date)
 
         # Создаём конкретные реализации
         parser = SpimexParser(max_date=max_date)
-        downloader = SpimexDownloader(repository=download_repository)
+        downloader = SpimexDownloader(repository=trade_repository)
         source = SpimexDataSource(parser=parser, downloader=downloader)
 
         # Создаём сервис загрузки ссылок (парсинг + сохранение в БД)
-        upload_service = UploadService(parser=parser, repository=upload_repository)
+        upload_service = UploadService(parser=parser, repository=trade_repository)
 
         # Собираем оркестратор
         orchestrator = Orchestrator(
             source=source,
             upload_service=upload_service,
-            download_repository=download_repository,
+            download_repository=trade_repository,
         )
 
         logger.info("Запуск оркестратора...")

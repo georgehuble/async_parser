@@ -3,7 +3,7 @@
 import logging
 from datetime import date
 
-from src.core.interfaces import Downloader
+from src.domain.interfaces import Downloader
 
 logger = logging.getLogger(__name__)
 

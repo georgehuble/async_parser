@@ -6,7 +6,9 @@ from pathlib import Path
 import aiohttp
 from tqdm.auto import tqdm
 
-from src.core.interfaces import Downloader
+from src.database import get_session
+from src.database.repository import TradeRepository
+from src.domain.interfaces import Downloader
 from src.domain.protocols import DownloadRepositoryProtocol
 
 logger = logging.getLogger(__name__)
@@ -197,17 +199,15 @@ class SpimexDownloader(Downloader):
                         continue
         return dates
 
+
 async def main(max_concurrent: int = 8) -> None:
     """Главная функция: подключается к БД, получает ссылки и скачивает файлы.
 
     Args:
         max_concurrent: Максимальное количество одновременных загрузок.
     """
-    from src.database import get_session
-    from src.database.repository import SpimexDownloadRepository
-
     async with get_session() as db_session:
-        repo: DownloadRepositoryProtocol = SpimexDownloadRepository(db_session)
+        repo: DownloadRepositoryProtocol = TradeRepository(db_session)
         links = await repo.get_links()
 
     downloader = SpimexDownloader(repository=repo)
@@ -215,5 +215,4 @@ async def main(max_concurrent: int = 8) -> None:
 
 
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(main())

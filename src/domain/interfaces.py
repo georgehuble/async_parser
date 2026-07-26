@@ -41,10 +41,15 @@ class Downloader(ABC):
         ...
 
 
-class DataSource(Parser, Downloader, ABC):
-    """Абстрактный базовый класс, объединяющий парсер и загрузчик.
+class DataSource(ABC):
+    """Абстрактный источник данных — композиция парсера и загрузчика."""
 
-    Представляет собой единый источник данных, который умеет
-    как получать ссылки (парсинг), так и загружать файлы.
-    """
-    ...
+    @abstractmethod
+    async def parse(self) -> list[str]:
+        """Запускает парсинг и возвращает список ссылок."""
+        ...
+
+    @abstractmethod
+    async def download(self, links: list[tuple[date, str]]) -> None:
+        """Загружает файлы по переданным ссылкам."""
+        ...

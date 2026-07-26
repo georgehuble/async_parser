@@ -47,3 +47,4 @@ ignore = []
 
 [tool.mypy]
 explicit_package_bases = true
+exclude = ['alembic/', 'laba_sql']

@@ -20,22 +20,18 @@ add-dev:
 update:
 	poetry update
 
+# Создать новую миграцию (использование: make migrate m="описание")
+migrate:
+	poetry run alembic revision --autogenerate -m "$(m)"
+
+# Применить миграции
+upgrade:
+	poetry run alembic upgrade head
+
 # Запустить приложение
 run:
 	poetry run python -m src.main
 
-
-# Инициализация базы данных
-database:
-	poetry run python -m src.database.main
-
-# Парсинг данных и выгрузка в БД
-parser:
-	poetry run python -m src.parser.upload
-
-# Скачивание файлов из базы данных
-download:
-	poetry run python -m src.downloader.spimex_downloader
 
 # Зайти в shell окружения poetry
 shell:
@@ -73,11 +69,3 @@ clean:
 # Запуск контейнеров
 docker:
 	docker compose up -d
-
-# Создать новую миграцию (использование: make migrate m="описание")
-migrate:
-	poetry run alembic revision --autogenerate -m "$(m)"
-
-# Применить миграции
-upgrade:
-	poetry run alembic upgrade head

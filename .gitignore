@@ -5,6 +5,6 @@ __pycache__/
 venv/
 .vscode/
 .ruff_chache/
-src/downloader/files/xls
-src/downloader/files/pdf
-/test
+src/downloader/files/*
+src/downloader/files/*
+/laba_sql

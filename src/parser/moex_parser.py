@@ -2,7 +2,7 @@
 
 import logging
 
-from src.core.interfaces import Parser
+from src.domain.interfaces import Parser
 
 logger = logging.getLogger(__name__)
 

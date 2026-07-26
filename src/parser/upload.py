@@ -1,7 +1,7 @@
 import logging
 from datetime import date
 
-from src.core.interfaces import Parser
+from src.domain.interfaces import Parser
 from src.domain.protocols import UploadRepositoryProtocol
 from src.domain.utils import save_urls
 

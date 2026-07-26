@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 import aiohttp
 from bs4 import BeautifulSoup
 
-from src.core.interfaces import Parser
+from src.domain.interfaces import Parser
 
 logger = logging.getLogger(__name__)
 
