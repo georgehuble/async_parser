@@ -1,4 +1,4 @@
-.PHONY: install run test lint format typecheck check clean shell add update lock
+.PHONY: install run test lint format typecheck check clean shell add update lock deploy
 
 # Установить зависимости из poetry.lock
 install:
@@ -32,7 +32,6 @@ upgrade:
 run:
 	poetry run python -m src.main
 
-
 # Зайти в shell окружения poetry
 shell:
 	poetry shell
@@ -43,7 +42,7 @@ test:
 
 # Тесты с покрытием
 coverage:
-	poetry run pytest --cov=. --cov-report=term-missing tests/
+	poetry run pytest --cov=src --cov-report=term-missing tests/
 
 # Линтер + автофикс (ruff умеет и то, и другое)
 lint:
@@ -58,14 +57,21 @@ typecheck:
 	poetry run mypy .
 
 # Прогнать всё разом перед коммитом/пушем
-check: format lint typecheck test
+check: lint format typecheck test
 
 # Очистка кэшей
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
-	rm -rf .pytest_cache .mypy_cache .ruff_cache htmlcov .coverage
+	rm -rf .pytest_cache .mypy_cache .ruff_cache htmlcov .coverage src/.mypy_cache
 
 # Запуск контейнеров
 docker:
 	docker compose up -d
+
+# Быстрый коммит + пуш в main (использование: make deploy m="описание коммита")
+deploy:
+	@if [ -z "$(m)" ]; then echo "Ошибка: укажи описание коммита. Пример: make deploy m=\"fix: исправлен баг\""; exit 1; fi
+	git add -A
+	git commit -m "$(m)"
+	git push origin master

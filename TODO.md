@@ -24,13 +24,39 @@
 - [X] Если запросы быстрые (быстрее чем 0.5 секунды), написать скрипт (команду) для генерации данных, в идеале чтобы в таблице было несколько миллионов записей (faker, factory_boy)
 - [X] Разобраться для каких запросов BTree, Hash, GIN и какие у этих индексов особенности
 - [X] Добавить индексы и сравнить результаты
+- [X] Добавить health check в docker compose
+- [X] Попробовать запустить на пустой базе данных `poetry run alembic upgrade head`, если всё работает, то убрать создание через скрипт
+- [ ] **Разобраться что такое нормализация БД и первые 3 нормальные формы, нормализовать свою базу данных**  ([youtu.be/0kq99Y8m0gw](https://youtu.be/0kq99Y8m0gw))
+- [ ] Сделать так, чтобы автоинкремент ID в базе данных не использовался для идентификации записи со spimex
+- [ ] Сделать так, чтобы в теории в базе данных можно было хранить записи из любых бирж не создавая отдельные таблицы под каждую биржу (нормализация)
+- [ ] Нарисовать UML диаграммы архитектуры базы данных с видами связи между таблицами
+- [ ] Оптимизация запросов для новичков ()www.youtube.com/watch?v=AZF9QZeJ-v8)
 
 # Теория (каждый блок пробуем применить к коду)
 
 - [X] Разобраться с тем что такое SRP в SOLID, что такое актор и чем отличается SRP от SoC
-- [ ] Разобраться в наследование, композиии, общих принципах проектироваие (https://www.youtube.com/watch?v=BoQnDymJIs4)
+- [ ] **Разобраться в наследование, композиии, общих принципах проектироваие** [youtu.be/BoQnDymJIs4](https://youtu.be/BoQnDymJIs4)
 - [ ] Разобраться что такое OCP в SOLID и с помощью какие принципов и паттернов его можно достить
 - [ ] Разобраться что такое DIP в SOLID и что такое Dependecy Injection
+- [ ] **Разобраться с контекстными менеджерами: уметь писать через функции, `contextlib.contextmanager` и классы**
+- [ ] Разобраться что такое ValueObject и Entity, выделить Entity в проекте
+- [ ] **Уметь объяснять Dependency Inversion Principle** [www.youtube.com/watch?v=Uq10IqZhf7U&amp;t=22s](https://www.youtube.com/watch?v=Uq10IqZhf7U&t=22s)
+- [ ] **Прочитать первые 2 главы книги ([drive.google.com/file/d/15tPCAl7AA_arDNg7lh5t0d3ZnGOMxEpM/view](https://drive.google.com/file/d/15tPCAl7AA_arDNg7lh5t0d3ZnGOMxEpM/view)) и уметь рассказывать**
+- [ ] Использовать ABC и `abc.abstractmethod` вместо Protocol
+
+# Рефакторинг структуры проекта
+
+- [ ] Переименовать `core/interfaces` -> `domain/interfaces/parsers`
+- [ ] Переименовать `domain/protocols` -> `domain/interfaces/repositories`
+- [ ] Переименовать папку `database` -> `infra/database`
+- [ ] Переименовать `datasource` -> `application/sources`
+- [ ] Переименовать `downloader` -> `application/downloaders`
+- [ ] Переименовать `extractor` -> `application/extractors`
+- [ ] Переименовать `parsers` -> `application/parsers`
+- [ ] DataSource переписать на композицию вместо наследования
+- [ ] Убрать orchestrator.py
+- [ ] Для каждого репозитория описать интерфейс через ABC (например `BaseUploadRepository`)
+- [ ] Проверить относительный импорт для переменных окружения `.env`, чтобы не было `BASE_DIR` и `ENV_PATH`
 
 # Новый функционал
 
