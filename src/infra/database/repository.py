@@ -10,13 +10,28 @@ from src.domain.entities import (
     OilProductEntity,
     TradeEntity,
 )
+from src.domain.interfaces.repositories.protocols import (
+    DeliveryBasisRepositoryProtocol,
+    DeliveryTypeRepositoryProtocol,
+    OilProductRepositoryProtocol,
+    TradeRepositoryProtocol,
+)
+from src.domain.value_objects import (
+    DeliveryBasisId,
+    DeliveryTypeId,
+    Exchange,
+    ExchangeProductId,
+    Money,
+    OilId,
+    Volume,
+)
 
 from .models import DeliveryBasis, DeliveryType, OilProduct, Trade
 
 logger = logging.getLogger(__name__)
 
 
-class TradeRepository:
+class TradeRepository(TradeRepositoryProtocol):
     """Репозиторий сделок (таблица trades)."""
 
     def __init__(self, db_session: AsyncSession) -> None:
@@ -40,19 +55,23 @@ class TradeRepository:
         logger.info("Получено %d ссылок из БД", len(rows))
         return [(row.date, row.url) for row in rows]
 
-    async def url_exists_by_date(self, dt: date) -> bool:
-        """Проверяет, существует ли запись с указанной датой."""
-        query = select(Trade.id).where(Trade.date == dt).limit(1)
+    async def url_exists_by_date(self, dt: date, exchange: str | None = None) -> bool:
+        """Проверяет, существует ли запись с указанной датой (опционально — по бирже)."""
+        query = select(Trade.id).where(Trade.date == dt)
+        if exchange is not None:
+            query = query.where(Trade.exchange == exchange)
+        query = query.limit(1)
         result = await self._db_session.execute(query)
         return result.scalar_one_or_none() is not None
 
-    async def add_url(self, url: str, dt: date | None = None) -> TradeEntity:
+    async def add_url(self, url: str, dt: date | None = None, exchange: str | None = None) -> TradeEntity:
         """Добавляет url с датой (для save_urls)."""
-        instance = Trade(url=url, date=dt)
+        instance = Trade(url=url, date=dt, exchange=exchange or "UNKNOWN")
         self._db_session.add(instance)
         await self._db_session.flush()
         return TradeEntity(
             id=instance.id,
+            exchange=Exchange(value=instance.exchange) if instance.exchange else None,
             url=instance.url,
             date=instance.date,
         )
@@ -61,6 +80,8 @@ class TradeRepository:
         self,
         url: str,
         dt: date | None = None,
+        exchange: str | None = None,
+        exchange_trade_id: str | None = None,
         product_id: int | None = None,
         delivery_basis_id: int | None = None,
         delivery_type_id: int | None = None,
@@ -72,6 +93,8 @@ class TradeRepository:
         instance = Trade(
             url=url,
             date=dt,
+            exchange=exchange or "UNKNOWN",
+            exchange_trade_id=exchange_trade_id,
             product_id=product_id,
             delivery_basis_id=delivery_basis_id,
             delivery_type_id=delivery_type_id,
@@ -83,13 +106,15 @@ class TradeRepository:
         await self._db_session.flush()
         return TradeEntity(
             id=instance.id,
+            exchange=Exchange(value=instance.exchange) if instance.exchange else None,
+            exchange_trade_id=instance.exchange_trade_id,
             url=instance.url,
             file_path=instance.file_path,
             product_id=instance.product_id,
             delivery_basis_id=instance.delivery_basis_id,
             delivery_type_id=instance.delivery_type_id,
-            volume=instance.volume,
-            total=instance.total,
+            volume=Volume(value=instance.volume) if instance.volume is not None else None,
+            total=Money(amount=instance.total) if instance.total is not None else None,
             count=instance.count,
             date=instance.date,
         )
@@ -107,13 +132,15 @@ class TradeRepository:
         return [
             TradeEntity(
                 id=instance.id,
+                exchange=Exchange(value=instance.exchange) if instance.exchange else None,
+                exchange_trade_id=instance.exchange_trade_id,
                 url=instance.url,
                 file_path=instance.file_path,
                 product_id=instance.product_id,
                 delivery_basis_id=instance.delivery_basis_id,
                 delivery_type_id=instance.delivery_type_id,
-                volume=instance.volume,
-                total=instance.total,
+                volume=Volume(value=instance.volume) if instance.volume is not None else None,
+                total=Money(amount=instance.total) if instance.total is not None else None,
                 count=instance.count,
                 date=instance.date,
                 created_on=instance.created_on,
@@ -132,17 +159,23 @@ class TradeRepository:
         await self._db_session.commit()
 
 
-class OilProductRepository:
+class OilProductRepository(OilProductRepositoryProtocol):
     """Репозиторий справочника нефтепродуктов."""
 
     def __init__(self, db_session: AsyncSession) -> None:
         self._db_session = db_session
 
     async def get_or_create(
-        self, exchange_product_id: str, name: str | None, oil_id: str | None
+        self,
+        exchange_product_id: str,
+        name: str | None,
+        oil_id: str | None,
+        exchange: str | None = None,
     ) -> OilProductEntity:
-        """Ищет запись по exchange_product_id, если нет — создаёт."""
+        """Ищет запись по exchange_product_id + exchange, если нет — создаёт."""
         query = select(OilProduct).where(OilProduct.exchange_product_id == exchange_product_id)
+        if exchange is not None:
+            query = query.where(OilProduct.exchange == exchange)
         result = await self._db_session.execute(query)
         instance = result.scalar_one_or_none()
 
@@ -151,15 +184,19 @@ class OilProductRepository:
                 exchange_product_id=exchange_product_id,
                 exchange_product_name=name,
                 oil_id=oil_id,
+                exchange=exchange,
             )
             self._db_session.add(instance)
             await self._db_session.flush()
 
         return OilProductEntity(
             id=instance.id,
-            exchange_product_id=instance.exchange_product_id,
+            exchange=Exchange(value=instance.exchange) if instance.exchange else None,
+            exchange_product_id=(
+                ExchangeProductId(instance.exchange_product_id) if instance.exchange_product_id else None
+            ),
             exchange_product_name=instance.exchange_product_name,
-            oil_id=instance.oil_id,
+            oil_id=OilId(instance.oil_id) if instance.oil_id else None,
         )
 
     async def get_by_id(self, product_id: int) -> OilProductEntity | None:
@@ -170,13 +207,16 @@ class OilProductRepository:
             return None
         return OilProductEntity(
             id=instance.id,
-            exchange_product_id=instance.exchange_product_id,
+            exchange=Exchange(value=instance.exchange) if instance.exchange else None,
+            exchange_product_id=(
+                ExchangeProductId(instance.exchange_product_id) if instance.exchange_product_id else None
+            ),
             exchange_product_name=instance.exchange_product_name,
-            oil_id=instance.oil_id,
+            oil_id=OilId(instance.oil_id) if instance.oil_id else None,
         )
 
 
-class DeliveryBasisRepository:
+class DeliveryBasisRepository(DeliveryBasisRepositoryProtocol):
     """Репозиторий справочника базисов поставки."""
 
     def __init__(self, db_session: AsyncSession) -> None:
@@ -197,7 +237,7 @@ class DeliveryBasisRepository:
 
         return DeliveryBasisEntity(
             id=instance.id,
-            delivery_basis_id=instance.delivery_basis_id,
+            delivery_basis_id=DeliveryBasisId(instance.delivery_basis_id) if instance.delivery_basis_id else None,
             delivery_basis_name=instance.delivery_basis_name,
         )
 
@@ -209,12 +249,12 @@ class DeliveryBasisRepository:
             return None
         return DeliveryBasisEntity(
             id=instance.id,
-            delivery_basis_id=instance.delivery_basis_id,
+            delivery_basis_id=DeliveryBasisId(instance.delivery_basis_id) if instance.delivery_basis_id else None,
             delivery_basis_name=instance.delivery_basis_name,
         )
 
 
-class DeliveryTypeRepository:
+class DeliveryTypeRepository(DeliveryTypeRepositoryProtocol):
     """Репозиторий справочника типов поставки."""
 
     def __init__(self, db_session: AsyncSession) -> None:
@@ -232,7 +272,7 @@ class DeliveryTypeRepository:
 
         return DeliveryTypeEntity(
             id=instance.id,
-            delivery_type_id=instance.delivery_type_id,
+            delivery_type_id=DeliveryTypeId(instance.delivery_type_id) if instance.delivery_type_id else None,
         )
 
     async def get_by_id(self, type_id: int) -> DeliveryTypeEntity | None:
@@ -243,5 +283,5 @@ class DeliveryTypeRepository:
             return None
         return DeliveryTypeEntity(
             id=instance.id,
-            delivery_type_id=instance.delivery_type_id,
+            delivery_type_id=DeliveryTypeId(instance.delivery_type_id) if instance.delivery_type_id else None,
         )

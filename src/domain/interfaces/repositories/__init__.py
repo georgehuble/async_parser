@@ -5,6 +5,7 @@ from src.domain.interfaces.repositories.protocols import (
     DeliveryTypeRepositoryProtocol,
     DownloadRepositoryProtocol,
     OilProductRepositoryProtocol,
+    TradeRepositoryProtocol,
     UploadRepositoryProtocol,
 )
 
@@ -14,4 +15,5 @@ __all__ = [
     "OilProductRepositoryProtocol",
     "DeliveryBasisRepositoryProtocol",
     "DeliveryTypeRepositoryProtocol",
+    "TradeRepositoryProtocol",
 ]

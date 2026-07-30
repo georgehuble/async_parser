@@ -15,11 +15,16 @@ class OilProduct(Base):
     __tablename__ = "oil_products"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    exchange_product_id: Mapped[str] = mapped_column(String(20), unique=True, nullable=False, index=True)
+    exchange: Mapped[str] = mapped_column(String(50), nullable=True, index=True)
+    exchange_product_id: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
     exchange_product_name: Mapped[str] = mapped_column(String(255), nullable=True)
     oil_id: Mapped[str] = mapped_column(String(4), nullable=True)
 
     trades: Mapped[list["Trade"]] = relationship(back_populates="product")
+
+    __table_args__ = (
+        UniqueConstraint("exchange", "exchange_product_id", name="uix_oil_product_exchange"),
+    )
 
 
 class DeliveryBasis(Base):
@@ -51,6 +56,8 @@ class Trade(Base):
     __tablename__ = "trades"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    exchange: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+    exchange_trade_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
     url: Mapped[str] = mapped_column(String(500), nullable=False, index=True)
     file_path: Mapped[str] = mapped_column(String(500), nullable=True)
 
@@ -80,5 +87,5 @@ class Trade(Base):
     delivery_type: Mapped[DeliveryType | None] = relationship(back_populates="trades")
 
     __table_args__ = (
-        UniqueConstraint("product_id", "delivery_basis_id", "delivery_type_id", "date", name="uix_trade_unique"),
+        UniqueConstraint("exchange", "exchange_trade_id", name="uix_exchange_trade"),
     )

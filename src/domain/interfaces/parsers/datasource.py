@@ -1,16 +1,14 @@
-from abc import ABC, abstractmethod
-from datetime import date
+from abc import ABC
+
+from src.domain.interfaces.parsers.downloader import Downloader
+from src.domain.interfaces.parsers.parser import Parser
 
 
 class DataSource(ABC):
-    """Абстрактный источник данных — композиция парсера и загрузчика."""
+    def __init__(self, parser: Parser, downloader: Downloader):
+        self._parser = parser
+        self._downloader = downloader
 
-    @abstractmethod
-    async def parse(self) -> list[str]:
-        """Запускает парсинг и возвращает список ссылок."""
-        ...
-
-    @abstractmethod
-    async def download(self, links: list[tuple[date, str]]) -> None:
-        """Загружает файлы по переданным ссылкам."""
-        ...
+    async def fetch(self) -> None:
+        links = await self._parser.parse()
+        await self._downloader.download(links)
