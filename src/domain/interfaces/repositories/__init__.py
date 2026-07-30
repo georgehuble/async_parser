@@ -1,11 +1,6 @@
-from .entities import (
-    DeliveryBasisEntity,
-    DeliveryTypeEntity,
-    OilProductEntity,
-    TradeEntity,
-)
-from .interfaces.parsers import DataSource, Downloader, Parser
-from .interfaces.repositories import (
+"""Протоколы репозиториев для работы с БД."""
+
+from src.domain.interfaces.repositories.protocols import (
     DeliveryBasisRepositoryProtocol,
     DeliveryTypeRepositoryProtocol,
     DownloadRepositoryProtocol,
@@ -14,16 +9,9 @@ from .interfaces.repositories import (
 )
 
 __all__ = [
-    "OilProductEntity",
-    "DeliveryBasisEntity",
-    "DeliveryTypeEntity",
-    "TradeEntity",
     "UploadRepositoryProtocol",
     "DownloadRepositoryProtocol",
     "OilProductRepositoryProtocol",
     "DeliveryBasisRepositoryProtocol",
     "DeliveryTypeRepositoryProtocol",
-    "DataSource",
-    "Downloader",
-    "Parser",
 ]

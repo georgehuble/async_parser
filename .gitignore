@@ -8,3 +8,4 @@ venv/
 src/downloader/files/*
 src/downloader/files/*
 /laba_sql
+con.py

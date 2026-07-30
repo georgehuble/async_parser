@@ -8,14 +8,14 @@
 import asyncio
 import logging
 
-from src.database import get_session
-from src.database.repository import TradeRepository
-from src.datasource.spimex_datasource import SpimexDataSource
-from src.domain.interfaces import DataSource
-from src.domain.protocols import DownloadRepositoryProtocol
-from src.downloader.spimex_downloader import SpimexDownloader
-from src.parser.spimex_parser import SpimexParser
-from src.parser.upload import UploadService
+from src.application.downloaders.spimex_downloader import SpimexDownloader
+from src.application.parsers.spimex_parser import SpimexParser
+from src.application.parsers.upload import UploadService
+from src.application.sources.spimex_datasource import SpimexDataSource
+from src.domain.interfaces.parsers import DataSource
+from src.domain.interfaces.repositories import DownloadRepositoryProtocol
+from src.infra.database import get_session
+from src.infra.database.repository import TradeRepository
 
 logger = logging.getLogger(__name__)
 

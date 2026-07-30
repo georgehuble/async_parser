@@ -26,35 +26,35 @@
 - [X] Добавить индексы и сравнить результаты
 - [X] Добавить health check в docker compose
 - [X] Попробовать запустить на пустой базе данных `poetry run alembic upgrade head`, если всё работает, то убрать создание через скрипт
-- [ ] **Разобраться что такое нормализация БД и первые 3 нормальные формы, нормализовать свою базу данных**  ([youtu.be/0kq99Y8m0gw](https://youtu.be/0kq99Y8m0gw))
+- [X] **Разобраться что такое нормализация БД и первые 3 нормальные формы, нормализовать свою базу данных**  (*[Нормальные формы базы данных. Три нормальных формы, нормализация и денормализация БД](https://youtu.be/0kq99Y8m0gw)*)
 - [ ] Сделать так, чтобы автоинкремент ID в базе данных не использовался для идентификации записи со spimex
 - [ ] Сделать так, чтобы в теории в базе данных можно было хранить записи из любых бирж не создавая отдельные таблицы под каждую биржу (нормализация)
 - [ ] Нарисовать UML диаграммы архитектуры базы данных с видами связи между таблицами
-- [ ] Оптимизация запросов для новичков ()www.youtube.com/watch?v=AZF9QZeJ-v8)
+- [ ] Оптимизация запросов для новичков (*[PostgreSQL and Slow Queries: What to Do When Indexes Don&#39;t Help?](https://youtu.be/AZF9QZeJ-v8)*)
 
 # Теория (каждый блок пробуем применить к коду)
 
 - [X] Разобраться с тем что такое SRP в SOLID, что такое актор и чем отличается SRP от SoC
-- [ ] **Разобраться в наследование, композиии, общих принципах проектироваие** [youtu.be/BoQnDymJIs4](https://youtu.be/BoQnDymJIs4)
-- [ ] Разобраться что такое OCP в SOLID и с помощью какие принципов и паттернов его можно достить
-- [ ] Разобраться что такое DIP в SOLID и что такое Dependecy Injection
-- [ ] **Разобраться с контекстными менеджерами: уметь писать через функции, `contextlib.contextmanager` и классы**
+- [ ] **Разобраться в наследование, композиии, общих принципах проектироваие** (*[OOP Design in Python](youtu.be/BoQnDymJIs4)*)
+- [X] Разобраться что такое OCP в SOLID и с помощью какие принципов и паттернов его можно достить (*[Принцип открытости закрытости, С#, Unity](https://youtu.be/qOdf5CqEx-k?list=PL7GaNwuzA5StUNiOJFulHSD1SKkLdQYIx))*
+- [ ] Разобраться что такое DIP в SOLID (*[youtu.be/7fCJ6lCZNM](https://youtu.be/Wtl7dHqIRVc))* и что такое Dependecy Injection
+- [X] **Разобраться с контекстными менеджерами: уметь писать через функции, `contextlib.contextmanager` и классы**
 - [ ] Разобраться что такое ValueObject и Entity, выделить Entity в проекте
-- [ ] **Уметь объяснять Dependency Inversion Principle** [www.youtube.com/watch?v=Uq10IqZhf7U&amp;t=22s](https://www.youtube.com/watch?v=Uq10IqZhf7U&t=22s)
-- [ ] **Прочитать первые 2 главы книги ([drive.google.com/file/d/15tPCAl7AA_arDNg7lh5t0d3ZnGOMxEpM/view](https://drive.google.com/file/d/15tPCAl7AA_arDNg7lh5t0d3ZnGOMxEpM/view)) и уметь рассказывать**
+- [ ] **Уметь объяснять Dependency Inversion Principle** (*[Принцип инверсии зависимости, С#, Unity](https://youtu.be/Uq10IqZhf7U))*
+- [ ] **Прочитать первые 2 главы книги** (*[книга google.disk](drive.google.com/file/d/15tPCAl7AA_arDNg7lh5t0d3ZnGOMxEpM/view))* **и уметь рассказывать**
 - [ ] Использовать ABC и `abc.abstractmethod` вместо Protocol
 
 # Рефакторинг структуры проекта
 
-- [ ] Переименовать `core/interfaces` -> `domain/interfaces/parsers`
-- [ ] Переименовать `domain/protocols` -> `domain/interfaces/repositories`
-- [ ] Переименовать папку `database` -> `infra/database`
-- [ ] Переименовать `datasource` -> `application/sources`
-- [ ] Переименовать `downloader` -> `application/downloaders`
-- [ ] Переименовать `extractor` -> `application/extractors`
-- [ ] Переименовать `parsers` -> `application/parsers`
+- [X] Переименовать `core/interfaces` -> `domain/interfaces/parsers`
+- [X] Переименовать `domain/protocols` -> `domain/interfaces/repositories`
+- [X] Переименовать папку `database` -> `infra/database`
+- [X] Переименовать `datasource` -> `application/sources`
+- [X] Переименовать `downloader` -> `application/downloaders`
+- [X] Переименовать `extractor` -> `application/extractors`
+- [X] Переименовать `parsers` -> `application/parsers`
 - [ ] DataSource переписать на композицию вместо наследования
-- [ ] Убрать orchestrator.py
+- [X] Убрать orchestrator.py
 - [ ] Для каждого репозитория описать интерфейс через ABC (например `BaseUploadRepository`)
 - [ ] Проверить относительный импорт для переменных окружения `.env`, чтобы не было `BASE_DIR` и `ENV_PATH`
 
