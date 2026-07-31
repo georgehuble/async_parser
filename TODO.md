@@ -41,7 +41,7 @@
 - [X] **Разобраться с контекстными менеджерами: уметь писать через функции, `contextlib.contextmanager` и классы**
 - [X] Разобраться что такое ValueObject и Entity, выделить Entity в проекте
 - [X] **Уметь объяснять Dependency Inversion Principle** (*[Принцип инверсии зависимости, С#, Unity](https://youtu.be/Uq10IqZhf7U))*
-- [ ] **Прочитать первые 2 главы книги** (*[книга google.disk](drive.google.com/file/d/15tPCAl7AA_arDNg7lh5t0d3ZnGOMxEpM/view))* **и уметь рассказывать**
+- [X] **Прочитать первые 2 главы книги** (*[книга google.disk](drive.google.com/file/d/15tPCAl7AA_arDNg7lh5t0d3ZnGOMxEpM/view))* **и уметь рассказывать**
 - [X] Использовать ABC и `abc.abstractmethod` вместо Protocol
 
 # Рефакторинг структуры проекта
