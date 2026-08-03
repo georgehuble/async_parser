@@ -9,6 +9,7 @@ import asyncio
 import logging
 
 from src.application.downloaders.spimex_downloader import SpimexDownloader
+from src.application.parsers.spimex_fetch import SpimexFetch
 from src.application.parsers.spimex_parser import SpimexParser
 from src.application.parsers.upload import UploadService
 from src.application.sources.spimex_datasource import SpimexDataSource
@@ -74,12 +75,13 @@ async def main() -> None:
         logger.info("Максимальная дата в БД: %s", max_date)
 
         # Создаём конкретные реализации
-        parser = SpimexParser(max_date=max_date)
+        parser = SpimexParser()
+        fetch = SpimexFetch(parser=parser, max_date=max_date)
         downloader = SpimexDownloader(repository=trade_repository)
-        source = SpimexDataSource(parser=parser, downloader=downloader)
+        source = SpimexDataSource(parser=fetch, downloader=downloader)
 
-        # Создаём сервис загрузки ссылок (парсинг + сохранение в БД)
-        upload_service = UploadService(parser=parser, repository=trade_repository)
+        # Создаём сервис загрузки ссылок (скачивание + сохранение в БД)
+        upload_service = UploadService(parser=fetch, repository=trade_repository)
 
         # Собираем оркестратор
         orchestrator = Orchestrator(

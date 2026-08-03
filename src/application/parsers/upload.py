@@ -1,7 +1,7 @@
 import logging
 from datetime import date
 
-from src.domain.interfaces.parsers import Parser
+from src.domain.interfaces.parsers import Fetch
 from src.domain.interfaces.repositories import UploadRepositoryProtocol
 from src.domain.utils import save_urls
 
@@ -9,17 +9,17 @@ logger = logging.getLogger(__name__)
 
 
 class UploadService:
-    """Сервис для парсинга ссылок и сохранения их в БД.
+    """Сервис для скачивания ссылок и сохранения их в БД.
 
-    Принимает абстрактные Parser и UploadRepositoryProtocol — не зависит
+    Принимает абстрактные Fetch и UploadRepositoryProtocol — не зависит
     от конкретных реализаций.
     """
 
-    def __init__(self, parser: Parser, repository: UploadRepositoryProtocol) -> None:
+    def __init__(self, parser: Fetch, repository: UploadRepositoryProtocol) -> None:
         """Инициализирует сервис.
 
         Args:
-            parser: Абстрактный парсер для получения ссылок.
+            parser: Абстрактный сканер страниц для получения ссылок.
             repository: Репозиторий для сохранения ссылок в БД.
         """
         self._parser = parser

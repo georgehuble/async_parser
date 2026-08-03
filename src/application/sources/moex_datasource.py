@@ -3,7 +3,7 @@
 import logging
 from datetime import date
 
-from src.domain.interfaces.parsers import DataSource, Downloader, Parser
+from src.domain.interfaces.parsers import DataSource, Downloader, Fetch
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ class MoexDataSource(DataSource):
     Создан для проверки OCP — ни один существующий файл не изменён.
     """
 
-    def __init__(self, parser: Parser, downloader: Downloader) -> None:
+    def __init__(self, parser: Fetch, downloader: Downloader) -> None:
         self._parser = parser
         self._downloader = downloader
 

@@ -1,7 +1,7 @@
 import logging
 from datetime import date
 
-from src.domain.interfaces.parsers import DataSource, Downloader, Parser
+from src.domain.interfaces.parsers import DataSource, Downloader, Fetch
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,7 @@ class SpimexDataSource(DataSource):
     Не содержит логики, специфичной для Spimex — только делегирование.
     """
 
-    def __init__(self, parser: Parser, downloader: Downloader) -> None:
+    def __init__(self, parser: Fetch, downloader: Downloader) -> None:
         """Инициализирует источник данных.
 
         Args:

@@ -1,13 +1,34 @@
 from abc import ABC, abstractmethod
 from datetime import date
+from enum import Enum
+
+
+class StopReason(Enum):
+    """Причина остановки перебора страниц при разборе HTML."""
+
+    CONTINUE = "continue"
+    CUTOFF = "cutoff"
+    MAX_DATE = "max_date"
 
 
 class Parser(ABC):
-    """Абстрактный базовый класс для парсеров."""
+    """Абстрактный базовый класс для разбора HTML-страниц.
+
+    Класс отвечает только за разбор (parse) HTML, который предоставил
+    ``Fetch``. Не выполняет сетевых запросов (SRP).
+    """
 
     @abstractmethod
-    async def parse(self) -> list[str]:
-        """Запускает парсинг и возвращает список ссылок."""
+    def parse_links(self, html: str, max_date: date | None = None) -> tuple[list[str], StopReason]:
+        """Разбирает HTML-страницу и возвращает (ссылки, причина остановки).
+
+        Args:
+            html: HTML-содержимое страницы.
+            max_date: Максимальная дата, до которой нужно собирать ссылки.
+
+        Returns:
+            Кортеж (список ссылок, причина остановки перебора страниц).
+        """
         ...
 
     def extract_date(self, url: str) -> date | None:

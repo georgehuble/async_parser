@@ -60,7 +60,7 @@
   -- Развернуть RabbitMQ (docker compose), написать producer и consumer
 - [ ] **Вариант 2: Практические продуктовые задачи с собеседований**
   -- Ресурс: *[Yandex Advanced Code Python](https://algocode.io/course/yandex-advanced-code-python?roadmapId=yandex)*
-  -- Решать задачи, оформляя решения в этом проекте
+  -- Решать задачи
 
 # Брокеры и очереди (теория)
 
