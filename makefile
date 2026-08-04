@@ -74,4 +74,4 @@ deploy:
 	@if [ -z "$(m)" ]; then echo "Ошибка: укажи описание коммита. Пример: make deploy m=\"fix: исправлен баг\""; exit 1; fi
 	git add -A
 	git commit -m "$(m)"
-	git push origin master
+	git push master
