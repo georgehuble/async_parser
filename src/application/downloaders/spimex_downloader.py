@@ -7,9 +7,9 @@ import aiohttp
 from tqdm.auto import tqdm
 
 from src.domain.interfaces.parsers import Downloader
-from src.domain.interfaces.repositories import DownloadRepositoryProtocol
+from src.domain.interfaces.repositories import DownloadRepositoryAbstract
 from src.infra.database import get_session
-from src.infra.database.repository import TradeRepository
+from src.infra.database.repositories import TradeRepository
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class SpimexDownloader(Downloader):
     }
     MAX_CONCURRENT = 8
 
-    def __init__(self, repository: DownloadRepositoryProtocol) -> None:
+    def __init__(self, repository: DownloadRepositoryAbstract) -> None:
         """Инициализирует загрузчик.
 
         Args:
@@ -207,7 +207,7 @@ async def main(max_concurrent: int = 8) -> None:
         max_concurrent: Максимальное количество одновременных загрузок.
     """
     async with get_session() as db_session:
-        repo: DownloadRepositoryProtocol = TradeRepository(db_session)
+        repo: DownloadRepositoryAbstract = TradeRepository(db_session)
         links = await repo.get_links()
 
     downloader = SpimexDownloader(repository=repo)

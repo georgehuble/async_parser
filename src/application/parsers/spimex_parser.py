@@ -42,7 +42,11 @@ class SpimexParser(Parser):
         Возвращает (список ссылок, причина остановки).
         Причина остановки: StopReason.CONTINUE — продолжать,
         StopReason.CUTOFF — достигнут предельный год,
-        StopReason.MAX_DATE — на странице встречена дата, уже имеющаяся в БД.
+        StopReason.MAX_DATE — на странице встречена дата, не превышающая max_date.
+
+        Ссылки с датами <= max_date пропускаются, чтобы быстро завершить
+        пагинацию. Проверку фактического наличия даты в БД выполняет save_urls
+        только для новых ссылок, собранных после max_date.
         """
         soup = BeautifulSoup(html, "lxml")
         daily_section = soup.find("div", class_="page-content__tabs__block", attrs={"data-tabcontent": "1"})
@@ -71,7 +75,7 @@ class SpimexParser(Parser):
                 stop_reason = StopReason.CUTOFF
                 break
 
-            # Если дата уже есть в БД — пропускаем эту ссылку, но продолжаем
+            # Если дата <= max_date — пропускаем эту ссылку, но продолжаем
             # проверять остальные (могут быть более свежие)
             if reason is StopReason.MAX_DATE:
                 stop_reason = StopReason.MAX_DATE

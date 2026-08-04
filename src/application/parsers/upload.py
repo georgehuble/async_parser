@@ -2,7 +2,7 @@ import logging
 from datetime import date
 
 from src.domain.interfaces.parsers import Fetch
-from src.domain.interfaces.repositories import UploadRepositoryProtocol
+from src.domain.interfaces.repositories import UploadRepositoryAbstract
 from src.domain.utils import save_urls
 
 logger = logging.getLogger(__name__)
@@ -11,38 +11,32 @@ logger = logging.getLogger(__name__)
 class UploadService:
     """Сервис для скачивания ссылок и сохранения их в БД.
 
-    Принимает абстрактные Fetch и UploadRepositoryProtocol — не зависит
+    Принимает абстрактные Fetch и UploadRepositoryAbstract — не зависит
     от конкретных реализаций.
     """
 
-    def __init__(self, parser: Fetch, repository: UploadRepositoryProtocol) -> None:
+    def __init__(self, parser: Fetch, repository: UploadRepositoryAbstract, exchange_id: int) -> None:
         """Инициализирует сервис.
 
         Args:
             parser: Абстрактный сканер страниц для получения ссылок.
             repository: Репозиторий для сохранения ссылок в БД.
+            exchange_id: Идентификатор биржевого источника.
         """
         self._parser = parser
         self._repository = repository
+        self._exchange_id = exchange_id
 
     async def run(self, max_date: date | None = None) -> list[str]:
         """Запускает парсинг и сохраняет ссылки в БД.
 
         Args:
-            max_date: Максимальная дата для парсинга.
+            max_date: Максимальная дата для ранней остановки парсинга.
                      Если None — парсинг всех доступных страниц.
 
         Returns:
             Список сохранённых ссылок.
         """
-        # Если в БД уже есть запись с max_date — данные актуальны, парсинг не нужен
-        if max_date is not None and await self._repository.url_exists_by_date(max_date):
-            logger.info(
-                "В БД уже есть данные за %s. Парсинг не требуется.",
-                max_date,
-            )
-            return []
-
         logger.info("Запуск парсера...")
         if max_date:
             logger.info("Парсер остановится <= %s", max_date)
@@ -69,5 +63,6 @@ class UploadService:
             url_exists_by_date=self._repository.url_exists_by_date,
             add_url=self._repository.add_url,
             urls=urls,
+            exchange_id=self._exchange_id,
             extract_date=self._parser.extract_date,
         )

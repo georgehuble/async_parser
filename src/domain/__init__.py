@@ -6,11 +6,11 @@ from .entities import (
 )
 from .interfaces.parsers import DataSource, Downloader, Parser
 from .interfaces.repositories import (
-    DeliveryBasisRepositoryProtocol,
-    DeliveryTypeRepositoryProtocol,
-    DownloadRepositoryProtocol,
-    OilProductRepositoryProtocol,
-    UploadRepositoryProtocol,
+    DeliveryBasisRepositoryAbstract,
+    DeliveryTypeRepositoryAbstract,
+    DownloadRepositoryAbstract,
+    OilProductRepositoryAbstract,
+    UploadRepositoryAbstract,
 )
 
 __all__ = [
@@ -18,11 +18,11 @@ __all__ = [
     "DeliveryBasisEntity",
     "DeliveryTypeEntity",
     "TradeEntity",
-    "UploadRepositoryProtocol",
-    "DownloadRepositoryProtocol",
-    "OilProductRepositoryProtocol",
-    "DeliveryBasisRepositoryProtocol",
-    "DeliveryTypeRepositoryProtocol",
+    "UploadRepositoryAbstract",
+    "DownloadRepositoryAbstract",
+    "OilProductRepositoryAbstract",
+    "DeliveryBasisRepositoryAbstract",
+    "DeliveryTypeRepositoryAbstract",
     "DataSource",
     "Downloader",
     "Parser",

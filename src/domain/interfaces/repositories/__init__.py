@@ -1,19 +1,21 @@
-"""Протоколы репозиториев для работы с БД."""
+"""Абстракции репозиториев для работы с БД."""
 
-from src.domain.interfaces.repositories.protocols import (
-    DeliveryBasisRepositoryProtocol,
-    DeliveryTypeRepositoryProtocol,
-    DownloadRepositoryProtocol,
-    OilProductRepositoryProtocol,
-    TradeRepositoryProtocol,
-    UploadRepositoryProtocol,
+from src.domain.interfaces.repositories.abstracts import (
+    DeliveryBasisRepositoryAbstract,
+    DeliveryTypeRepositoryAbstract,
+    DownloadRepositoryAbstract,
+    ExchangeRepositoryAbstract,
+    OilProductRepositoryAbstract,
+    TradeRepositoryAbstract,
+    UploadRepositoryAbstract,
 )
 
 __all__ = [
-    "UploadRepositoryProtocol",
-    "DownloadRepositoryProtocol",
-    "OilProductRepositoryProtocol",
-    "DeliveryBasisRepositoryProtocol",
-    "DeliveryTypeRepositoryProtocol",
-    "TradeRepositoryProtocol",
+    "UploadRepositoryAbstract",
+    "DownloadRepositoryAbstract",
+    "ExchangeRepositoryAbstract",
+    "OilProductRepositoryAbstract",
+    "DeliveryBasisRepositoryAbstract",
+    "DeliveryTypeRepositoryAbstract",
+    "TradeRepositoryAbstract",
 ]

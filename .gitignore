@@ -5,7 +5,6 @@ __pycache__/
 venv/
 .vscode/
 .ruff_chache/
-src/downloader/files/*
-src/downloader/files/*
+src/application/downloaders/files/*
 /laba_sql
 con.py

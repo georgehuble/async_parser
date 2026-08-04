@@ -14,11 +14,14 @@ from src.application.parsers.spimex_parser import SpimexParser
 from src.application.parsers.upload import UploadService
 from src.application.sources.spimex_datasource import SpimexDataSource
 from src.domain.interfaces.parsers import DataSource
-from src.domain.interfaces.repositories import DownloadRepositoryProtocol
+from src.domain.interfaces.repositories import DownloadRepositoryAbstract
 from src.infra.database import get_session
-from src.infra.database.repository import TradeRepository
+from src.infra.database.repositories import ExchangeRepository, TradeRepository
 
 logger = logging.getLogger(__name__)
+
+# Название биржи для источника SPIMEX (см. таблицу exchanges)
+SPIMEX_NAME = "SPIMEX"
 
 
 class Orchestrator:
@@ -28,7 +31,7 @@ class Orchestrator:
         self,
         source: DataSource,
         upload_service: UploadService,
-        download_repository: DownloadRepositoryProtocol,
+        download_repository: DownloadRepositoryAbstract,
     ) -> None:
         """Инициализирует оркестратор.
 
@@ -69,6 +72,11 @@ async def main() -> None:
     # Создаём сессию БД и общий репозиторий сделок
     async with get_session() as session:
         trade_repository = TradeRepository(session)
+        exchange_repository = ExchangeRepository(session)
+
+        # Получаем (или создаём) биржевой источник SPIMEX
+        exchange = await exchange_repository.get_or_create_by_name(SPIMEX_NAME)
+        logger.info("Биржевой источник: %s (id=%s)", exchange.name, exchange.exchange_id)
 
         # Получаем максимальную дату из БД для ранней остановки парсинга
         max_date = await trade_repository.get_max_date()
@@ -81,7 +89,11 @@ async def main() -> None:
         source = SpimexDataSource(parser=fetch, downloader=downloader)
 
         # Создаём сервис загрузки ссылок (скачивание + сохранение в БД)
-        upload_service = UploadService(parser=fetch, repository=trade_repository)
+        upload_service = UploadService(
+            parser=fetch,
+            repository=trade_repository,
+            exchange_id=exchange.exchange_id or 0,
+        )
 
         # Собираем оркестратор
         orchestrator = Orchestrator(

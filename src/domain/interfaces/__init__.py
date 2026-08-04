@@ -3,20 +3,20 @@
 # Re-export для обратной совместимости (старые импорты вида src.domain.interfaces.Parser)
 from src.domain.interfaces.parsers import DataSource, Downloader, Parser
 from src.domain.interfaces.repositories import (
-    DeliveryBasisRepositoryProtocol,
-    DeliveryTypeRepositoryProtocol,
-    DownloadRepositoryProtocol,
-    OilProductRepositoryProtocol,
-    UploadRepositoryProtocol,
+    DeliveryBasisRepositoryAbstract,
+    DeliveryTypeRepositoryAbstract,
+    DownloadRepositoryAbstract,
+    OilProductRepositoryAbstract,
+    UploadRepositoryAbstract,
 )
 
 __all__ = [
     "Parser",
     "Downloader",
     "DataSource",
-    "UploadRepositoryProtocol",
-    "DownloadRepositoryProtocol",
-    "OilProductRepositoryProtocol",
-    "DeliveryBasisRepositoryProtocol",
-    "DeliveryTypeRepositoryProtocol",
+    "UploadRepositoryAbstract",
+    "DownloadRepositoryAbstract",
+    "OilProductRepositoryAbstract",
+    "DeliveryBasisRepositoryAbstract",
+    "DeliveryTypeRepositoryAbstract",
 ]

@@ -40,11 +40,11 @@ dev = [
 [tool.ruff]
 line-length = 120
 target-version = "py311"
+extend-exclude = ["alembic", "laba_sql"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
-ignore = []
 
 [tool.mypy]
 explicit_package_bases = true
-exclude = ['alembic/', 'laba_sql']
+exclude = ['alembic', 'laba_sql']

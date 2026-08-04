@@ -4,37 +4,48 @@ from datetime import date
 from src.domain.entities import (
     DeliveryBasisEntity,
     DeliveryTypeEntity,
+    ExchangeEntity,
     OilProductEntity,
     TradeEntity,
 )
 
 
-class UploadRepositoryProtocol(ABC):
+class ExchangeRepositoryAbstract(ABC):
+    """Абстрактный базовый класс репозитория биржевых источников."""
+
+    @abstractmethod
+    async def get_id_by_name(self, name: str) -> int | None: ...
+
+    @abstractmethod
+    async def get_or_create_by_name(self, name: str) -> ExchangeEntity: ...
+
+
+class UploadRepositoryAbstract(ABC):
     """Абстрактный базовый класс репозитория для загрузки (записи) сделок в БД."""
 
     @abstractmethod
-    async def url_exists_by_date(self, dt: date, exchange: str | None = None) -> bool: ...
+    async def url_exists_by_date(self, dt: date, exchange_id: int) -> bool: ...
 
     @abstractmethod
-    async def add_url(self, url: str, dt: date | None = None, exchange: str | None = None) -> TradeEntity: ...
+    async def add_url(self, url: str, dt: date | None = None, exchange_id: int = 0) -> TradeEntity: ...
 
     @abstractmethod
     async def add(
         self,
         url: str,
         dt: date | None = None,
-        exchange: str | None = None,
+        exchange_id: int = 0,
         exchange_trade_id: str | None = None,
         product_id: int | None = None,
-        delivery_basis_id: int | None = None,
-        delivery_type_id: int | None = None,
+        delivery_basis_id: str | None = None,
+        delivery_type_id: str | None = None,
         volume: float | None = None,
         total: float | None = None,
         count: int | None = None,
     ) -> TradeEntity: ...
 
 
-class DownloadRepositoryProtocol(ABC):
+class DownloadRepositoryAbstract(ABC):
     """Абстрактный базовый класс репозитория для скачивания (чтения/обновления) сделок."""
 
     @abstractmethod
@@ -50,7 +61,7 @@ class DownloadRepositoryProtocol(ABC):
     async def commit(self) -> None: ...
 
 
-class OilProductRepositoryProtocol(ABC):
+class OilProductRepositoryAbstract(ABC):
     """Абстрактный базовый класс репозитория справочника нефтепродуктов."""
 
     @abstractmethod
@@ -59,35 +70,35 @@ class OilProductRepositoryProtocol(ABC):
         exchange_product_id: str,
         name: str | None,
         oil_id: str | None,
-        exchange: str | None = None,
+        exchange_id: int,
     ) -> OilProductEntity: ...
 
     @abstractmethod
     async def get_by_id(self, product_id: int) -> OilProductEntity | None: ...
 
 
-class DeliveryBasisRepositoryProtocol(ABC):
+class DeliveryBasisRepositoryAbstract(ABC):
     """Абстрактный базовый класс репозитория справочника базисов поставки."""
 
     @abstractmethod
     async def get_or_create(self, delivery_basis_id: str, name: str | None) -> DeliveryBasisEntity: ...
 
     @abstractmethod
-    async def get_by_id(self, basis_id: int) -> DeliveryBasisEntity | None: ...
+    async def get_by_id(self, basis_id: str) -> DeliveryBasisEntity | None: ...
 
 
-class DeliveryTypeRepositoryProtocol(ABC):
+class DeliveryTypeRepositoryAbstract(ABC):
     """Абстрактный базовый класс репозитория справочника типов поставки."""
 
     @abstractmethod
     async def get_or_create(self, delivery_type_id: str) -> DeliveryTypeEntity: ...
 
     @abstractmethod
-    async def get_by_id(self, type_id: int) -> DeliveryTypeEntity | None: ...
+    async def get_by_id(self, type_id: str) -> DeliveryTypeEntity | None: ...
 
 
-class TradeRepositoryProtocol(
-    UploadRepositoryProtocol,
-    DownloadRepositoryProtocol,
+class TradeRepositoryAbstract(
+    UploadRepositoryAbstract,
+    DownloadRepositoryAbstract,
 ):
     """Абстрактный базовый класс репозитория trade — объединяет запись и чтение."""
