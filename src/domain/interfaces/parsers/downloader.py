@@ -6,10 +6,10 @@ class Downloader(ABC):
     """Абстрактный базовый класс для загрузчиков."""
 
     @abstractmethod
-    async def download(self, links: list[tuple[date, str]]) -> None:
+    async def download(self, links: list[tuple[date, str, int]]) -> None:
         """Загружает файлы по переданным ссылкам.
 
         Args:
-            links: Список кортежей (дата, ссылка).
+            links: Список кортежей (дата, url, exchange_id).
         """
         ...

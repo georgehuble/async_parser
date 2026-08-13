@@ -60,7 +60,7 @@ class UploadService:
     async def _save_urls(self, urls: list[str]) -> None:
         """Сохраняет ссылки в БД через репозиторий."""
         await save_urls(
-            url_exists_by_date=self._repository.url_exists_by_date,
+            url_exists=self._repository.url_exists,
             add_url=self._repository.add_url,
             urls=urls,
             exchange_id=self._exchange_id,

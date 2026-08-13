@@ -5,6 +5,7 @@
 Также содержит оркестратор, координирующий парсинг и скачивание.
 """
 
+import argparse
 import asyncio
 import logging
 
@@ -12,10 +13,9 @@ from src.application.downloaders.spimex_downloader import SpimexDownloader
 from src.application.parsers.spimex_fetch import SpimexFetch
 from src.application.parsers.spimex_parser import SpimexParser
 from src.application.parsers.upload import UploadService
-from src.application.sources.spimex_datasource import SpimexDataSource
-from src.domain.interfaces.parsers import DataSource
+from src.domain.interfaces.parsers import Downloader
 from src.domain.interfaces.repositories import DownloadRepositoryAbstract
-from src.infra.database import get_session
+from src.infra.database import clear_all_tables, get_session
 from src.infra.database.repositories import ExchangeRepository, TradeRepository
 
 logger = logging.getLogger(__name__)
@@ -29,18 +29,18 @@ class Orchestrator:
 
     def __init__(
         self,
-        source: DataSource,
+        downloader: Downloader,
         upload_service: UploadService,
         download_repository: DownloadRepositoryAbstract,
     ) -> None:
         """Инициализирует оркестратор.
 
         Args:
-            source: Источник данных (для скачивания файлов).
+            downloader: Загрузчик файлов.
             upload_service: Сервис парсинга и сохранения ссылок в БД.
             download_repository: Репозиторий для получения ссылок на скачивание.
         """
-        self._source = source
+        self._downloader = downloader
         self._upload_service = upload_service
         self._download_repository = download_repository
 
@@ -61,16 +61,28 @@ class Orchestrator:
 
         # Шаг 4: Скачивание
         logger.info("Запуск скачивания %d файлов...", len(links))
-        await self._source.download(links)
+        await self._downloader.download(links)
         logger.info("Цикл завершён.")
 
 
 async def main() -> None:
     """Собирает зависимости и запускает оркестратор."""
+    arg_parser = argparse.ArgumentParser(description="Парсер с торгов СПб биржи")
+    arg_parser.add_argument(
+        "--clear",
+        action="store_true",
+        help="Очистить все таблицы БД перед запуском парсинга",
+    )
+    args = arg_parser.parse_args()
+
     logger.info("Сборка зависимостей...")
 
     # Создаём сессию БД и общий репозиторий сделок
     async with get_session() as session:
+        if args.clear:
+            logger.warning("Очистка всех таблиц БД перед запуском парсинга...")
+            await clear_all_tables(session)
+
         trade_repository = TradeRepository(session)
         exchange_repository = ExchangeRepository(session)
 
@@ -86,7 +98,6 @@ async def main() -> None:
         parser = SpimexParser()
         fetch = SpimexFetch(parser=parser, max_date=max_date)
         downloader = SpimexDownloader(repository=trade_repository)
-        source = SpimexDataSource(parser=fetch, downloader=downloader)
 
         # Создаём сервис загрузки ссылок (скачивание + сохранение в БД)
         upload_service = UploadService(
@@ -97,7 +108,7 @@ async def main() -> None:
 
         # Собираем оркестратор
         orchestrator = Orchestrator(
-            source=source,
+            downloader=downloader,
             upload_service=upload_service,
             download_repository=trade_repository,
         )

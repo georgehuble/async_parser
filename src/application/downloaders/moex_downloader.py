@@ -11,6 +11,6 @@ logger = logging.getLogger(__name__)
 class MoexDownloader(Downloader):
     """Загрузчик файлов с сайта MOEX (заглушка)."""
 
-    async def download(self, links: list[tuple[date, str]]) -> None:
+    async def download(self, links: list[tuple[date, str, int]]) -> None:
         """Заглушка: просто логирует."""
         logger.info("MoexDownloader.download() — заглушка, получено %d ссылок", len(links))

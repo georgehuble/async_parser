@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import Date, DateTime, Float, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import Date, DateTime, Float, ForeignKey, Index, Integer, String, UniqueConstraint, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -89,11 +89,11 @@ class Trade(Base):
         String(1), ForeignKey("delivery_types.delivery_type_id"), nullable=True, index=True
     )
 
-    volume: Mapped[float] = mapped_column(Float, nullable=True)
-    total: Mapped[float] = mapped_column(Float, nullable=True)
-    count: Mapped[int] = mapped_column(Integer, nullable=True)
+    volume: Mapped[float | None] = mapped_column(Float, nullable=True)
+    total: Mapped[float | None] = mapped_column(Float, nullable=True)
+    count: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
-    date: Mapped[datetime] = mapped_column(Date, nullable=True, index=True)
+    date: Mapped[date | None] = mapped_column(Date, nullable=True, index=True)
 
     created_on: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=True)
     updated_on: Mapped[datetime] = mapped_column(
@@ -107,4 +107,12 @@ class Trade(Base):
 
     __table_args__ = (
         UniqueConstraint("exchange_id", "exchange_trade_id", name="uix_exchange_trade"),
+        # Бизнес-ключ бюллетеней: (exchange_id, url) уникален только для строк без exchange_trade_id
+        Index(
+            "uix_exchange_url",
+            "exchange_id",
+            "url",
+            unique=True,
+            postgresql_where=text("exchange_trade_id IS NULL"),
+        ),
     )

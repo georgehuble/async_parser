@@ -1,4 +1,4 @@
-from .database import async_session_factory, engine, get_session
+from .database import async_session_factory, clear_all_tables, engine, get_session
 from .models import Base
 from .repositories import (
     DeliveryBasisRepository,
@@ -11,6 +11,7 @@ from .repositories import (
 __all__ = [
     "engine",
     "async_session_factory",
+    "clear_all_tables",
     "get_session",
     "Base",
     "ExchangeRepository",

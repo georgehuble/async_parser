@@ -40,11 +40,11 @@ class SpimexDownloader(Downloader):
         self._repository = repository
         self.FILES_DIR.mkdir(parents=True, exist_ok=True)
 
-    async def download(self, links: list[tuple[date, str]]) -> None:
+    async def download(self, links: list[tuple[date, str, int]]) -> None:
         """Загружает файлы по переданным ссылкам.
 
         Args:
-            links: Список кортежей (дата, ссылка).
+            links: Список кортежей (дата, url, exchange_id).
         """
         if not links:
             logger.info("Нет ссылок для скачивания")
@@ -53,7 +53,7 @@ class SpimexDownloader(Downloader):
         # Фильтруем: исключаем даты, которые уже скачаны
         existing_dates = self._get_downloaded_dates()
         before = len(links)
-        links = [(dt, url) for dt, url in links if dt not in existing_dates]
+        links = [(dt, url, exchange_id) for dt, url, exchange_id in links if dt not in existing_dates]
         if existing_dates:
             logger.info(
                 "Пропущено %d уже скачанных дат, осталось %d для скачивания",
@@ -73,7 +73,7 @@ class SpimexDownloader(Downloader):
             with tqdm(total=len(links), unit=" files", desc="Скачивание") as pbar:
                 tasks = [
                     self._download_file(http_session, dt, url, semaphore, pbar)
-                    for dt, url in links
+                    for dt, url, _exchange_id in links
                 ]
                 results: list[str | BaseException | None] = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -81,14 +81,14 @@ class SpimexDownloader(Downloader):
         success_count = 0
         fail_count = 0
 
-        for (dt, url), result in zip(links, results):
+        for (dt, url, exchange_id), result in zip(links, results):
             if not isinstance(result, (str, type(None))):
                 logger.error("Исключение при скачивании даты=%s: %s", dt, result)
                 fail_count += 1
                 continue
             if result is not None:
-                # result — это относительный путь к файлу
-                await self._repository.update_file_path_by_date(dt, result)
+                # result — это относительный путь к файлу; обновляем по бизнес-ключу (exchange_id, url)
+                await self._repository.update_file_path_by_url(url, exchange_id, result)
                 success_count += 1
             else:
                 fail_count += 1

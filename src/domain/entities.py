@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 
 from src.domain.value_objects import (
     DeliveryBasisId,
@@ -61,6 +63,6 @@ class TradeEntity:
     volume: Volume | None = None
     total: Money | None = None
     count: int | None = None
-    date: datetime | None = None
+    date: date | None = None
     created_on: datetime | None = None
     updated_on: datetime | None = None

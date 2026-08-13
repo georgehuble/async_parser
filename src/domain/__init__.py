@@ -4,7 +4,7 @@ from .entities import (
     OilProductEntity,
     TradeEntity,
 )
-from .interfaces.parsers import DataSource, Downloader, Parser
+from .interfaces.parsers import Downloader, Parser
 from .interfaces.repositories import (
     DeliveryBasisRepositoryAbstract,
     DeliveryTypeRepositoryAbstract,
@@ -23,7 +23,6 @@ __all__ = [
     "OilProductRepositoryAbstract",
     "DeliveryBasisRepositoryAbstract",
     "DeliveryTypeRepositoryAbstract",
-    "DataSource",
     "Downloader",
     "Parser",
 ]

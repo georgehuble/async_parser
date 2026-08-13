@@ -48,3 +48,6 @@ select = ["E", "F", "I", "N", "W", "UP"]
 [tool.mypy]
 explicit_package_bases = true
 exclude = "(^|/)(alembic|laba_.*)(/|$)"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

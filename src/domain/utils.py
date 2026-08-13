@@ -9,10 +9,16 @@ logger = logging.getLogger(__name__)
 # Тип для коллбека извлечения даты из URL
 ExtractDateFn = Callable[[str], date | None]
 
+# Тип для коллбека проверки существования записи по бизнес-ключу (exchange_id, url)
+UrlExistsFn = Callable[[str, int], Awaitable[bool]]
+
+# Тип для коллбека добавления записи (url, date, exchange_id)
+AddUrlFn = Callable[[str, date | None, int], Awaitable[object]]
+
 
 async def save_urls(
-    url_exists_by_date: Callable[[date, int], Awaitable[bool]],
-    add_url: Callable[[str, date | None, int], Awaitable[object]],
+    url_exists: UrlExistsFn,
+    add_url: AddUrlFn,
     urls: list[str],
     *,
     exchange_id: int,
@@ -24,8 +30,12 @@ async def save_urls(
     а также опциональную функцию извлечения даты из URL.
     Если extract_date не передан — дата не извлекается (None).
 
+    Дубликаты определяются по бизнес-ключу (exchange_id, url), а не по
+    автоинкрементному trade_id: повторный запуск парсера не создаёт
+    новые записи для уже сохранённых бюллетеней Spimex.
+
     Args:
-        url_exists_by_date: Асинхронная функция проверки существования даты по бирже.
+        url_exists: Асинхронная функция проверки существования записи по (exchange_id, url).
         add_url: Асинхронная функция добавления ссылки (url, date, exchange_id).
         urls: Список URL для сохранения.
         exchange_id: Идентификатор биржевого источника.
@@ -38,9 +48,9 @@ async def save_urls(
         try:
             url_date = extract_date(url) if extract_date else None
 
-            if url_date is not None and await url_exists_by_date(url_date, exchange_id):
+            if await url_exists(url, exchange_id):
                 skipped_count += 1
-                logger.warning("Пропущен дубликат по дате %s: %s", url_date, url)
+                logger.warning("Пропущен дубликат по бизнес-ключу (exchange_id=%s): %s", exchange_id, url)
                 continue
 
             await add_url(url, url_date, exchange_id)
