@@ -1,7 +1,6 @@
 # Общее
 
 Подготовиться к **07.08.2026** — акцент на **SRP** и **DIP**
--- Общая схема: как расшифровывается, общие формулировки, пример применения к коду
 
 # Теория (всегда пробуем применить на практике)
 
@@ -21,7 +20,7 @@
   -- TradeRepository: upsert в add_url/add, file_path обновляется по (exchange_id, url)
   -- Частичный уникальный индекс uix_exchange_url добавлен в models — сгенерировать миграцию через alembic autogenerate и применить
 - [ ] Нарисовать UML диаграммы архитектуры базы данных с видами связи между таблицами
-- [ ] Оптимизация запросов для новичков (*[PostgreSQL and Slow Queries: What to Do When Indexes Don&#39;t Help?](https://youtu.be/AZF9QZeJ-v8)*)
+- [X] Оптимизация запросов для новичков (*[PostgreSQL and Slow Queries: What to Do When Indexes Don&#39;t Help?](https://youtu.be/AZF9QZeJ-v8)*)
 
 # Рефакторинг структуры проекта
 
@@ -49,13 +48,17 @@
 
 # Брокеры и очереди (практика — одно на выбор)
 
-- [ ] **Вариант 1: RabbitMQ** — развернуть у себя, написать простой producer и consumer
+- [ ] **Вариант 1: RabbitMQ**
   -- Ресурс: *[RabbitMQ плейлист](https://www.youtube.com/watch?v=1BtXBwVHKhI&list=PLYnH8mpFQ4amsOuXBq4Gpc-Tzt-pwGjnI)*
   -- Разобраться с терминологией (producer, consumer, брокер, очередь)
   -- Развернуть RabbitMQ (docker compose), написать producer и consumer
 - [ ] **Вариант 2: Практические продуктовые задачи с собеседований**
-  -- Ресурс: *[Yandex Advanced Code Python](https://algocode.io/course/yandex-advanced-code-python?roadmapId=yandex)*
-  -- Решать задачи
+  -- Решать задачи на ресурсе: *[Yandex Advanced Code Python](https://algocode.io/course/yandex-advanced-code-python?roadmapId=yandex)*
+
+  - [X] **Система бронирования номера в отеле (средне)**
+  - [X] **Система бронирования номера в отеле V2 (сложно)**
+  - [X] **Софт для SDK банкомата (средне)**
+  - [ ] **Софт для SDK банкомата (V2) (сложно)**
 
 # Брокеры и очереди
 
