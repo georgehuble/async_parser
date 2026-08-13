@@ -8,3 +8,4 @@ venv/
 src/application/downloaders/files/*
 /laba_sql
 con.py
+laba_rabbitMQ/
