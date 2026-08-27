@@ -29,7 +29,7 @@
 #### Задачи на algocode: 1 задача с видео-разбором + любое количество задач с «огоньком» 
 #### по теме «Два указателя» — *[algo-interview-two-pointers](https://algocode.io/course/algo-interview-two-pointers?courseId=algo-interview-two-pointers&roadmapId=algorithms)*
 
-- [ ] 1 🔥 — простые
+- [X] 1 🔥 — простые
 
   - [X] **Сортировка элементов в квадрате**
   - [X] **Сумма в сортированном массиве**
@@ -38,30 +38,30 @@
 
 #### по теме «Хэш-таблицы» — *[algo-interview-hash-table](https://algocode.io/course/algo-interview-hash-table?roadmapId=algorithms)*
 
-- [ ] 1 🔥 — простые
+- [X] 1 🔥 — простые
 
   - [X] **Наличие повторений**
   - [X] **Сумма двух чисел**
   - [X] **Маршрут туриста**
-  - [ ] **Слово — анаграмма**
+  - [X] **Слово — анаграмма**
 
 
 #### по теме «Массивы и матрицы» — [algo-interview-arrays-and-matrices](https://algocode.io/course/algo-interview-arrays-and-matrices?roadmapId=algorithms)
 
-- [ ] 1 🔥 — простые
+- [X] 1 🔥 — простые
 
   - [X] **Максимальное произведение**
   - [X] **Возрастающая подпоследовательность**
   - [X] **Пропущенное число**
-  - [ ] **Сумма на отрезках**
+  - [X] **Сумма на отрезках**
 
 #### по теме «Плавающее окно» — [algo-interview-sliding-window](https://algocode.io/course/algo-interview-sliding-window?roadmapId=algorithms)
 
-- [ ] 1 🔥 — простые
+- [X] 1 🔥 — простые
 
   - [X] **Богатый инвестор**
   - [X] **Жаркий отпуск тихоходки**
-  - [ ] **Осадки в виде фрикаделек**
+  - [X] **Осадки в виде фрикаделек**
 
 #### Практические продуктовые задачи с собеседований  [yandex-advanced-code-python](https://algocode.io/course/yandex-advanced-code-python?roadmapId=yandex):
 
@@ -76,12 +76,12 @@
 
 - [ ] Ресурс: [RabbitMQ плейлист](https://www.youtube.com/watch?v=1BtXBwVHKhI&list=PLYnH8mpFQ4amsOuXBq4Gpc-Tzt-pwGjnI)
 - [X] Развернуть RabbitMQ (docker compose), написать producer и consumer
-- [ ] Посмотреть, что такое модель Pub/Sub, и подумать, как её можно применить в проекте, например: -- producer отправляет в очередь A ссылки, по которым нужно сходить и забрать xls/pdf -- consumer/      producer читает из очереди A, отправляет запросы и складывает результат в другую очередь B -- consumer/producer читает из очереди B, парсинг и складывает в базу данных
-- [ ] Реализовать на стандартных очередях, например в asyncio.Queue [степик](https://stepik.org/lesson/933719/step/1?unit=939618)
+- [X] Посмотреть, что такое модель Pub/Sub, и подумать, как её можно применить в проекте, например: -- producer отправляет в очередь A ссылки, по которым нужно сходить и забрать xls/pdf -- consumer/      producer читает из очереди A, отправляет запросы и складывает результат в другую очередь B -- consumer/producer читает из очереди B, парсинг и складывает в базу данных
+- [X] Реализовать на стандартных очередях, например в asyncio.Queue [степик](https://stepik.org/lesson/933719/step/1?unit=939618)
 
 ### Базы данных
 
-- [ ] Нарисовать UML диаграммы архитектуры базы данных с видами связи между таблицами
+- [X] Нарисовать UML диаграммы архитектуры базы данных с видами связи между таблицами
 - [ ] Спроектировать архитектуру БД на примере YouTube: выделить сущности, определить связи и раскидать по таблицам
 
 ### Нейросети
