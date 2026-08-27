@@ -58,7 +58,11 @@ class TradeEntity:
     url: str = ""
     file_path: str | None = None
     product_id: int | None = None
+    exchange_product_id: str | None = None
+    exchange_product_name: str | None = None
+    oil_id: str | None = None
     delivery_basis_id: str | None = None
+    delivery_basis_name: str | None = None
     delivery_type_id: str | None = None
     volume: Volume | None = None
     total: Money | None = None

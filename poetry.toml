@@ -1,0 +1,4 @@
+# Локальный конфиг poetry: виртуальное окружение хранится в кэше poetry,
+# а не в каталоге проекта (см. AGENTS.md — «Use poetry only, without .venv»).
+[virtualenvs]
+in-project = false

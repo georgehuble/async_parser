@@ -31,23 +31,13 @@ class SpimexFetch(Fetch):
     }
     BATCH_SIZE = 10
 
-    def __init__(self, parser: Parser, max_date: date | None = None) -> None:
+    def __init__(self, parser: Parser) -> None:
         """Инициализирует сканер страниц.
 
         Args:
             parser: Разбор HTML-страницы (SRP).
-            max_date: Максимальная дата для ранней остановки скачивания.
         """
         self._parser = parser
-        self.max_date = max_date
-
-    def extract_date(self, url: str) -> date | None:
-        """Делегирует извлечение даты из URL разборщику HTML."""
-        return self._parser.extract_date(url)
-
-    async def parse(self) -> list[str]:
-        """Сканирует страницы сайта и возвращает список ссылок."""
-        return await self._main()
 
     async def fetch_html(self, url: str) -> str:
         """Отправляет HTTP-запрос по URL и возвращает HTML-страницу.
@@ -69,20 +59,26 @@ class SpimexFetch(Fetch):
             for p in range(page, page + self.BATCH_SIZE)
         ]
 
-    async def _fetch_and_parse(self, session: aiohttp.ClientSession, url: str) -> tuple[list[str], StopReason]:
+    async def _fetch_and_parse(
+        self,
+        session: aiohttp.ClientSession,
+        url: str,
+        max_date: date | None,
+    ) -> tuple[list[str], StopReason]:
         """Скачивает HTML и делегирует разбор страницы в отдельный поток."""
         try:
             async with session.get(url) as response:
                 html = await response.text()
-            return await asyncio.to_thread(self._parser.parse_links, html, self.max_date)
+            return await asyncio.to_thread(self._parser.parse_links, html, max_date)
         except Exception as e:
             logger.error(f"Ошибка при обработке {url}: {e}")
             return [], StopReason.CONTINUE
 
-    async def _main(self) -> list[str]:
-        """Основная логика скачивания страниц.
+    async def collect_links(self, max_date: date | None = None) -> list[str]:
+        """Обходит страницы сайта и возвращает список ссылок.
 
-        Параметр max_date берётся из self.max_date.
+        Args:
+            max_date: Максимальная дата для ранней остановки обхода.
         """
         timeout = aiohttp.ClientTimeout(total=30)
         connector = aiohttp.TCPConnector(limit_per_host=30)
@@ -99,7 +95,7 @@ class SpimexFetch(Fetch):
                 has_new_links = False
 
                 for url in urls:
-                    links, reason = await self._fetch_and_parse(session, url)
+                    links, reason = await self._fetch_and_parse(session, url, max_date)
 
                     if reason is StopReason.CUTOFF:
                         stop_reason = StopReason.CUTOFF

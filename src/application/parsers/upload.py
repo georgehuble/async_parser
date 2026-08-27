@@ -3,29 +3,37 @@ from datetime import date
 
 from src.domain.interfaces.parsers import Fetch
 from src.domain.interfaces.repositories import UploadRepositoryAbstract
-from src.domain.utils import save_urls
+from src.domain.utils import ExtractDateFn, save_urls
 
 logger = logging.getLogger(__name__)
 
 
 class UploadService:
-    """Сервис для скачивания ссылок и сохранения их в БД.
+    """Сервис для сбора ссылок и сохранения их в БД.
 
-    Принимает абстрактные Fetch и UploadRepositoryAbstract — не зависит
-    от конкретных реализаций.
+    Принимает абстрактный Fetch, функцию извлечения даты из URL и
+    UploadRepositoryAbstract — не зависит от конкретных реализаций.
     """
 
-    def __init__(self, parser: Fetch, repository: UploadRepositoryAbstract, exchange_id: int) -> None:
+    def __init__(
+        self,
+        fetcher: Fetch,
+        repository: UploadRepositoryAbstract,
+        exchange_id: int,
+        extract_date: ExtractDateFn | None = None,
+    ) -> None:
         """Инициализирует сервис.
 
         Args:
-            parser: Абстрактный сканер страниц для получения ссылок.
+            fetcher: Абстрактный сканер страниц для получения ссылок.
             repository: Репозиторий для сохранения ссылок в БД.
             exchange_id: Идентификатор биржевого источника.
+            extract_date: Функция извлечения даты из URL.
         """
-        self._parser = parser
+        self._fetcher = fetcher
         self._repository = repository
         self._exchange_id = exchange_id
+        self._extract_date = extract_date
 
     async def run(self, max_date: date | None = None) -> list[str]:
         """Запускает парсинг и сохраняет ссылки в БД.
@@ -43,11 +51,7 @@ class UploadService:
         else:
             logger.info("Парсинг всех доступных страниц")
 
-        # Устанавливаем max_date в парсер, если поддерживается
-        if hasattr(self._parser, "max_date"):
-            self._parser.max_date = max_date  # type: ignore[union-attr]
-
-        scraped_urls = await self._parser.parse()
+        scraped_urls = await self._fetcher.collect_links(max_date=max_date)
 
         if not scraped_urls:
             logger.info("Ссылки не найдены.")
@@ -64,5 +68,5 @@ class UploadService:
             add_url=self._repository.add_url,
             urls=urls,
             exchange_id=self._exchange_id,
-            extract_date=self._parser.extract_date,
+            extract_date=self._extract_date,
         )

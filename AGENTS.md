@@ -1,4 +1,5 @@
-# Language
+# stack
+- Use poetry only, without .venv
 
 # Language
 

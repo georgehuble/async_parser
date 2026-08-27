@@ -77,7 +77,7 @@ class Trade(Base):
     )
     exchange_trade_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
     url: Mapped[str] = mapped_column(String(500), nullable=False, index=True)
-    file_path: Mapped[str] = mapped_column(String(500), nullable=True)
+    file_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     product_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("oil_products.product_id"), nullable=True, index=True

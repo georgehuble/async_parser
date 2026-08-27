@@ -11,7 +11,7 @@ from .models import Base
 logger = logging.getLogger(__name__)
 
 engine = create_async_engine(
-    settings.database_url, echo=True, pool_pre_ping=True, pool_size=10, connect_args={"ssl": False}
+    settings.database_url, echo=False, pool_pre_ping=True, pool_size=10, connect_args={"ssl": False}
 )
 
 

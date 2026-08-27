@@ -61,6 +61,35 @@ class TradeRepository(TradeRepositoryAbstract):
         await self._db_session.flush()
         return self._to_entity(instance)
 
+    async def add_trades(self, trades: list[TradeEntity]) -> None:
+        """Массово добавляет сделки без проверки существования по бизнес-ключу.
+
+        Вызывающий код обязан отфильтровать уже существующие сделки
+        (например, через ``get_existing_trade_ids``). Поля TradeEntity
+        (product_id, url) должны быть уже разрешены.
+        """
+        if not trades:
+            return
+
+        instances = [
+            Trade(
+                url=trade.url,
+                date=trade.date,
+                exchange_id=trade.exchange_id or 0,
+                exchange_trade_id=trade.exchange_trade_id,
+                product_id=trade.product_id,
+                delivery_basis_id=trade.delivery_basis_id,
+                delivery_type_id=trade.delivery_type_id,
+                volume=float(trade.volume) if trade.volume is not None else None,
+                total=float(trade.total) if trade.total is not None else None,
+                count=trade.count,
+                file_path=trade.file_path,
+            )
+            for trade in trades
+        ]
+        self._db_session.add_all(instances)
+        await self._db_session.flush()
+
     async def add(
         self,
         url: str,
@@ -73,6 +102,7 @@ class TradeRepository(TradeRepositoryAbstract):
         volume: float | None = None,
         total: float | None = None,
         count: int | None = None,
+        file_path: str | None = None,
     ) -> TradeEntity:
         """Upsert сделки по бизнес-ключу (exchange_id, exchange_trade_id)."""
         instance = (
@@ -93,6 +123,7 @@ class TradeRepository(TradeRepositoryAbstract):
                 volume=volume,
                 total=total,
                 count=count,
+                file_path=file_path,
             )
             self._db_session.add(instance)
         else:
@@ -104,9 +135,51 @@ class TradeRepository(TradeRepositoryAbstract):
             instance.volume = volume
             instance.total = total
             instance.count = count
+            instance.file_path = file_path
 
         await self._db_session.flush()
         return self._to_entity(instance)
+
+    async def get_bulletin_url_by_date(self, dt: date, exchange_id: int) -> str | None:
+        """Возвращает URL бюллетеня для даты (строка без exchange_trade_id).
+
+        Args:
+            dt: Дата торгов.
+            exchange_id: Идентификатор биржевого источника.
+
+        Returns:
+            URL бюллетеня или None, если запись не найдена.
+        """
+        query = (
+            select(Trade.url)
+            .where(
+                Trade.date == dt,
+                Trade.exchange_id == exchange_id,
+                Trade.exchange_trade_id.is_(None),
+            )
+            .limit(1)
+        )
+        result = await self._db_session.execute(query)
+        return result.scalar_one_or_none()
+
+    async def get_existing_trade_ids(self, exchange_id: int, trade_ids: list[str]) -> set[str]:
+        """Возвращает exchange_trade_id уже существующих сделок (для пропуска дубликатов).
+
+        Args:
+            exchange_id: Идентификатор биржевого источника.
+            trade_ids: Список business-ключей сделок для проверки.
+
+        Returns:
+            Множество exchange_trade_id, найденных в БД.
+        """
+        if not trade_ids:
+            return set()
+        query = select(Trade.exchange_trade_id).where(
+            Trade.exchange_id == exchange_id,
+            Trade.exchange_trade_id.in_(trade_ids),
+        )
+        result = await self._db_session.execute(query)
+        return {trade_id for trade_id in result.scalars().all() if trade_id is not None}
 
     async def update_file_path_by_url(self, url: str, exchange_id: int, file_path: str) -> None:
         """Обновляет путь к файлу по бизнес-ключу (exchange_id, url)."""

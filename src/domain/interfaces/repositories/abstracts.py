@@ -42,7 +42,17 @@ class UploadRepositoryAbstract(ABC):
         volume: float | None = None,
         total: float | None = None,
         count: int | None = None,
+        file_path: str | None = None,
     ) -> TradeEntity: ...
+
+    @abstractmethod
+    async def add_trades(self, trades: list[TradeEntity]) -> None:
+        """Массово добавляет сделки без проверки существования по бизнес-ключу.
+
+        Вызывающий код обязан отфильтровать уже существующие сделки
+        (например, через ``get_existing_trade_ids``).
+        """
+        ...
 
 
 class DownloadRepositoryAbstract(ABC):
@@ -53,6 +63,13 @@ class DownloadRepositoryAbstract(ABC):
 
     @abstractmethod
     async def get_links(self) -> list[tuple[date, str, int]]: ...
+
+    @abstractmethod
+    async def get_bulletin_url_by_date(self, dt: date, exchange_id: int) -> str | None: ...
+
+    @abstractmethod
+    async def get_existing_trade_ids(self, exchange_id: int, trade_ids: list[str]) -> set[str]:
+        """Возвращает exchange_trade_id уже существующих сделок (для пропуска дубликатов)."""
 
     @abstractmethod
     async def update_file_path_by_url(self, url: str, exchange_id: int, file_path: str) -> None: ...
