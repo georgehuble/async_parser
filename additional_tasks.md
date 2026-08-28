@@ -3,10 +3,6 @@
 ## Задачи на algocode: 1 задача с видео-разбором + любое количество задач с «огоньком» по теме «Два указателя» — *[algo-interview-two-pointers](https://algocode.io/course/algo-interview-two-pointers?courseId=algo-interview-two-pointers&roadmapId=algorithms)*
 
 - [ ] **1 🔥 — простые**
-    - [ ] Разворот строки
-    - [ ] Нечётный поиск
-    - [ ] Односторонняя разница
-    - [ ] Удаление дубликатов 2
     - [ ] Минимальная разность
     - [ ] Удаление повторов
     - [ ] Общий префикс
@@ -33,11 +29,6 @@
 
 #### по теме «Хэш-таблицы» — *[algo-interview-hash-table](https://algocode.io/course/algo-interview-hash-table?roadmapId=algorithms)*
 
-- [ ] 1 🔥 — простые
-    - [ ] Сортировка 012
-    - [ ] Поиск недостающего символа
-    - [ ] Первый уникальный символ
-    - [ ] Палиндром из строки
 - [ ] 2 🔥 — средние
     - [ ] Соревнования по числу шагов
     - [ ] Поиск анаграмм
@@ -70,8 +61,6 @@
 #### по теме «Плавающее окно» — *[algo-interview-sliding-window](https://algocode.io/course/algo-interview-sliding-window?roadmapId=algorithms)*
 
 - [ ] 2 🔥 — средние
-    - [ ] Инвестор в стране дураков
-    - [ ] Рост акций компании
     - [ ] Сжатие значений счетчика
     - [ ] Лучшее место на парковке
     - [ ] Кодирование повторов
